@@ -1,37 +1,81 @@
 # PERFORMANCE
 
-Explicit performance contract for the product. Every budget is a CI gate; violation fails the build.
+Explicit performance contract. Every budget is a CI gate; violation fails the build. Targets are world-class ceiling, not Web Vitals "good" floor.
 
 ## User-perceived budgets
 
 | Metric | Budget | Measured at |
 |---|---|---|
-| LCP (Largest Contentful Paint) | ≤ 1.5s on cable, ≤ 2.5s on slow 4G | Real-user (RUM) + Lighthouse-CI synthetic |
-| INP (Interaction to Next Paint) | ≤ 100ms on desktop, ≤ 200ms on mid-tier laptop | RUM + Playwright trace |
-| CLS (Cumulative Layout Shift) | ≤ 0.02 | RUM + Lighthouse-CI |
-| TTI (Time to Interactive) | ≤ 2.5s on cable | Lighthouse-CI |
-| 3D scene frame budget | ≤ 16.67ms (60 fps locked) | Stats overlay + Playwright trace |
+| LCP (Largest Contentful Paint) | ≤ 1.0s on cable, ≤ 2.0s on slow 4G | Real-user (RUM) + Lighthouse-CI synthetic |
+| INP (Interaction to Next Paint) | ≤ 50ms on desktop, ≤ 100ms on mid-tier laptop, ≤ 200ms on mobile read-only | RUM + Playwright trace |
+| CLS (Cumulative Layout Shift) | ≤ 0.01 | RUM + Lighthouse-CI |
+| TBT (Total Blocking Time) | ≤ 100ms | Lighthouse-CI |
+| TTI (Time to Interactive) | ≤ 2.0s on cable | Lighthouse-CI |
+| TTFB (Time to First Byte) | ≤ 200ms edge-cached, ≤ 500ms origin | RUM + Caddy access log |
 | Step-animation transition | ≤ 400ms total, no dropped frames | Playwright trace |
+
+## Frame budget
+
+| Display | Target | Floor | p99 frame time |
+|---|---|---|---|
+| Standard 60 Hz | 60 fps | 60 fps | ≤ 16.67 ms |
+| 120 Hz / ProMotion | 120 fps | 60 fps | ≤ 8.33 ms when 120fps active, ≤ 16.67 ms when 60fps |
+| 144 Hz+ gaming | 144 fps | 60 fps | matches display refresh |
+
+`<Canvas frameloop="demand">` ensures idle frame cost = 0 ms (no render when no state changes). Idle CPU + GPU usage = 0 (verified via `r3f-perf` + Chrome perf trace).
+
+Refresh-rate detection at canvas mount via `screen.refreshRate` (or `matchMedia('(update: fast)')` proxy); animation step duration scales inversely with refresh rate so transitions feel identical across displays.
+
+## 3D scene-specific budgets
+
+| Resource | Budget |
+|---|---|
+| Draw calls per frame | ≤ 50 in hero datapath scene, ≤ 100 in K-map toroidal, ≤ 200 absolute cap |
+| Triangles per frame | ≤ 200,000 |
+| Active materials | ≤ 30 unique |
+| Active textures | 0 (pure-procedural per `adr/asset-authoring.md`) |
+| Shader compile time first use | ≤ 100 ms per shader |
+| First 3D paint after hydration | ≤ 500 ms |
+| Scene swap (route change, mode toggle) | ≤ 200 ms, zero dropped frames during transition |
+| Geometry / material allocations per frame | 0 (pooled, reused) |
 
 ## Asset budgets
 
 | Asset class | Budget | Enforcement |
 |---|---|---|
-| Initial bundle (non-editor routes) | ≤ 200 KB gzip | bundle-size CI gate |
-| Editor-route bundle | ≤ 600 KB gzip (Monaco dynamic-imported) | bundle-size CI gate |
-| 3D-route bundle | ≤ 500 KB gzip (three + drei + product features) | bundle-size CI gate |
+| Initial bundle (non-editor, non-3D routes) | ≤ 150 KB gzip | bundle-size CI gate |
+| Editor-route bundle | ≤ 500 KB gzip (Monaco dynamic-imported) | bundle-size CI gate |
+| 3D-route bundle | ≤ 400 KB gzip (three + drei + product features) | bundle-size CI gate |
+| CSS shipped per route | ≤ 25 KB gzip | bundle-size CI gate |
 | Per-request JSON payload | ≤ 4 KB gzip (snapshot reads) | Route Handler smoke |
-| Font subset | Latin-only by default, full Unicode lazy | Font loading hook |
-| Image / texture | All procedural; zero external textures per `adr/asset-authoring.md` | Repo-asset lint |
+| Font subset (initial) | Latin + math + Boolean symbols only, ≤ 30 KB woff2 | Font loading hook |
+| Font additional weights | Lazy-loaded after first paint, ≤ 50 KB total | Font loading hook |
+| Image / texture | All procedural; zero external textures | Repo-asset lint |
+
+## Sim-engine compute budgets
+
+| Operation | Budget |
+|---|---|
+| `step(state)` single-cycle MIPS | ≤ 1 ms per cycle |
+| `canonicalize(state)` + `blake3(bytes)` | ≤ 10 ms for typical snapshot |
+| `deserialize(bytes)` | ≤ 5 ms |
+| Quine-McCluskey 4-var | ≤ 5 ms |
+| Quine-McCluskey 6-var | ≤ 50 ms (Web Worker, off main thread) |
+| Espresso 12-var (deferred geometry) | ≤ 500 ms (Web Worker) |
+| Pipeline trace arrange 100 cycles × 20 instructions | ≤ 30 ms |
+| Critical-path longest-path walk | ≤ 5 ms |
+
+Operations above 16ms on main thread → Web Worker required.
 
 ## Runtime memory
 
 | Resource | Ceiling |
 |---|---|
-| JS heap (steady state, after one full sim cycle) | ≤ 150 MB |
-| GPU memory (R3F context) | ≤ 250 MB |
+| JS heap (steady state, after one full sim cycle) | ≤ 100 MB |
+| GPU memory (R3F context) | ≤ 200 MB |
 | Live event listeners | ≤ 500 |
 | Open `requestAnimationFrame` callbacks | ≤ 5 unique sources |
+| Object pool allocations per frame | 0 (pooled per `adr/compute-budgets.md`) |
 
 Memory leak detection via Playwright `page.coverage` + heap snapshot diff between identical sim cycles.
 
@@ -39,20 +83,47 @@ Memory leak detection via Playwright `page.coverage` + heap snapshot diff betwee
 
 | Path | Cold | Warm |
 |---|---|---|
-| Landing route | ≤ 1.5s LCP | ≤ 300ms LCP (CF edge cached) |
-| `/s/[hash]` shared permalink | ≤ 1.8s LCP (one origin hop) | ≤ 250ms LCP (CF edge cached) |
-| `/datapath` interactive | ≤ 2.5s TTI | ≤ 1s TTI |
-| `/kmap` interactive | ≤ 2.0s TTI | ≤ 800ms TTI |
+| Landing route | ≤ 1.0s LCP | ≤ 200ms LCP (CF edge cached) |
+| `/s/[hash]` shared permalink | ≤ 1.5s LCP (one origin hop) | ≤ 200ms LCP (CF edge cached forever, immutable) |
+| `/datapath` interactive | ≤ 2.0s TTI | ≤ 800ms TTI |
+| `/kmap` interactive | ≤ 1.5s TTI | ≤ 600ms TTI |
+| `/learn/*` MDX | ≤ 1.0s LCP | ≤ 200ms LCP |
+
+## Network
+
+| Aspect | Target |
+|---|---|
+| Protocol | HTTP/3 (QUIC) preferred, HTTP/2 fallback. Caddy + Cloudflare both support. |
+| Compression | Brotli level 6 (balance between ratio and CPU). gzip fallback. |
+| CDN cache hit ratio | ≥ 95% (content-addressed share paths → effectively 100%) |
+| Resource hints | `<link rel="preconnect">` to Convex + Cloudflare; `<link rel="preload">` for critical fonts + above-fold assets |
+| HTTP/3 0-RTT | Enabled where supported |
+
+## Build + DX perf
+
+| Operation | Budget |
+|---|---|
+| Turbopack incremental rebuild | ≤ 500 ms |
+| Turbopack full build | ≤ 30 s |
+| HMR module update | ≤ 100 ms |
+| Dev server cold start | ≤ 5 s |
+| Test suite (bun test, single package) | ≤ 30 s |
+| Test suite (all packages) | ≤ 90 s |
 
 ## CI gates
 
 | Gate | Tool | Threshold |
 |---|---|---|
 | Bundle-size budget | `bundlesize2` or equivalent | Per-route budget above |
-| Lighthouse-CI synthetic | `@lhci/cli` | LCP, CLS, TBT per Vercel-best-practices |
-| Playwright trace | Playwright `--trace on` | INP, dropped frame count |
+| Lighthouse-CI synthetic | `@lhci/cli` | LCP, INP, CLS, TBT, TTFB per budgets above |
+| Playwright trace | Playwright `--trace on` | INP, dropped frame count, frame p99 |
 | Heap snapshot diff | Custom script | Leak detected = fail |
-| 3D frame timing | `r3f-perf` + Playwright | 60 fps locked over 10s sample |
+| 3D frame timing | `r3f-perf` + Playwright | Locked frame budget over 10s sample |
+| Draw-call audit | Three.js renderer.info | Per-scene draw-call budget |
+| Shader compile time | Custom probe | First-use compile ≤ 100ms |
+| Sim-engine micro-benchmark | `mitata` or equivalent | Per-operation budgets above |
+| Network protocol assertion | curl + smoke | HTTP/3 negotiated when available |
+| Cache hit ratio | CF Analytics API or origin log analysis | ≥ 95% weekly |
 
 ## Optimization patterns (locked)
 
@@ -65,21 +136,39 @@ Memory leak detection via Playwright `page.coverage` + heap snapshot diff betwee
 - BVH raycasting (drei `Bvh`) for cell picking in K-map
 - Frame-loop on demand (`<Canvas frameloop="demand">`) — only render when state changes, freezes when idle
 - Geometry / material pooled and reused — no per-frame allocations
+- Object pooling for hot-loop Vector3 / Quaternion / Matrix4 allocations
 - Texture KTX2 + zstd for any future raster (currently none per asset-authoring ADR)
-- HTTP/2 + Brotli compression at Caddy
+- HTTP/3 + Brotli compression at Caddy
+- Web Workers for compute > 16ms (QM, Espresso, pipeline analyzer)
+- Pixel ratio capped at 2 on high-DPI displays to prevent over-rendering
+- `contain: strict` on 3D scene container for layout isolation
+- Critical CSS inlined via Tailwind 4 JIT
+- React Compiler enabled (when stable on Next 16) — drops manual `useMemo` / `useCallback`
+- CSS containment on every Card / Panel surface
 
 ## Anti-patterns banned
 
-- Per-frame `setState` in `useFrame` (banned — mutate refs)
-- New object props on R3F components in render (banned — `useMemo` or stable refs)
-- Synchronous JSON parsing > 100ms on main thread (banned — Web Worker)
-- Layout thrash (banned — batch DOM reads/writes)
-- Render-blocking third-party scripts (banned — none allowed)
+- Per-frame `setState` in `useFrame` (mutate refs instead)
+- New object props on R3F components in render (`useMemo` or stable refs)
+- Synchronous JSON parsing > 16 ms on main thread (Web Worker)
+- Layout thrash (batch DOM reads/writes)
+- Render-blocking third-party scripts (none allowed regardless)
+- `setState` cascades (use `useReducer` or zustand)
+- Synchronous `JSON.stringify` of large objects on main thread
+- Reading `getBoundingClientRect` during animation frame (cache)
+- `forEach` in hot loops (use `for` loop)
+- New `Vector3()` / `Matrix4()` / `Quaternion()` allocations in `useFrame` (pool them)
+- Mounting heavy components synchronously without Suspense boundary
 
 ## Caught by
 
 - Bundle-size CI gate
-- Lighthouse-CI gate
+- Lighthouse-CI gate (LCP / INP / CLS / TBT / TTFB)
 - Playwright performance trace
 - Heap-snapshot diff smoke
 - r3f-perf overlay in dev (locked threshold, fails dev build if breached)
+- Draw-call budget assertion in dev
+- Shader-compile probe smoke
+- Sim-engine micro-benchmark CI
+- HTTP/3 negotiation smoke
+- CDN cache hit ratio weekly review
