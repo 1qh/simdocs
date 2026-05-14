@@ -104,6 +104,18 @@ Web-only. No iOS, no Android, no Electron, no Tauri.
 
 Trigger: req for offline-first installable shell.
 
+## WebXR / VR mode
+
+VR session for 3D scenes (datapath + K-map toroidal) is scoped, substrate-compat-locked, but not in floor.
+
+Trigger: drei `xr` package stable on locked R3F version + user demand signal + operator decision. Per `adr/webxr.md`.
+
+## Native mobile / desktop apps
+
+Web-only. No iOS, no Android, no Electron, no Tauri. PWA service-worker + installable shell per `adr/offline-pwa.md` covers offline-installable use cases.
+
+Trigger: req for offline-first native shell beyond PWA capability.
+
 ## Phased "MVP first, polish later" framings
 
 Per `book/PHILOSOPHY.md` "Unlimited rework pre-launch" + "Locked is floor, only more never less". Every feature ships at world-class quality on first land; rework freely pre-launch.

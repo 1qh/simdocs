@@ -22,6 +22,17 @@ Per `book/HARD-RULES.md` "Maximum-strictness lint baseline". Every linter enable
 | `tools/lint/atemporal-docs.ts` | Banned temporal phrasings in docs |
 | `tools/lint/substrate-boundary.ts` | `packages/*` source contains no domain vocab |
 | `tools/lint/spec-of-code.ts` | STACK + SCHEMAS + ISA + datapath ADRs diff against code artifacts |
+| `tools/lint/no-determinism-leak.ts` | Banned non-deterministic patterns in `packages/sim-engine` per `DETERMINISM.md` |
+| `tools/lint/api-conventions.ts` | Server Action / Route Handler / Convex function conventions per `API-CONVENTIONS.md` |
+| `tools/lint/no-third-party-trackers.ts` | Banned analytics SDKs per `OBSERVABILITY.md` |
+| `tools/lint/no-dangerously-set-inner-html.ts` | XSS surface, zero hits required |
+| `tools/lint/cloudflare-bearer.ts` | No Worker / KV / D1 / Pages Functions imports per `adr/deploy-target.md` |
+| `tools/lint/glossary-coverage.ts` | Every domain term used in product code appears in `GLOSSARY.md` |
+| Stryker | Mutation score ≥ 80% on sim-engine, boolean, bits per `adr/mutation-testing.md` |
+| `@lhci/cli` | Lighthouse-CI gates per `adr/perf-budget.md` |
+| `bundlesize2` | Bundle-size gates per `adr/perf-budget.md` |
+| `axe-core` (Playwright) | Zero AA violations per `A11Y.md` |
+| `pa11y` | Contrast budgets per `A11Y.md` |
 
 ## Tight thresholds (TypeScript)
 

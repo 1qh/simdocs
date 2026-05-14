@@ -71,6 +71,21 @@ mindmap
       fast check property based
       convex test
       Playwright E2E
+      Stryker mutation testing
+      axe core a11y
+      pa11y contrast
+    Perf
+      bundlesize2 bundle gate
+      lhci Lighthouse CI
+      r3f perf frame budget
+      web vitals RUM
+    Observability
+      Plausible Analytics self host
+      structured JSON logs
+    PWA
+      next pwa or Workbox service worker
+    OG
+      next ImageResponse
     CI
       GitHub Actions matched to claude2b pattern
       Renovate auto bumps

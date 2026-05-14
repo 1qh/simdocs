@@ -15,9 +15,15 @@ Every Claude session that touches this project runs in this exact order before a
    - `SUBSTRATE-VS-PRODUCT.md` — split for this project
    - `AGENT-DOCTRINE.md` — project agent rules
    - `UX-DOCTRINE.md` — industrial 3D UX
+   - `A11Y.md` — accessibility floor
+   - `PERFORMANCE.md` — perf contract
+   - `DETERMINISM.md` — reproducibility contract
    - `STACK.md` — locked picks
+   - `API-CONVENTIONS.md`, `GLOSSARY.md`, `OBSERVABILITY.md`
    - `AUTH.md`, `PERSISTENCE.md`, `DEPLOY.md`, `SECURITY.md`, `SCHEMAS.md`
    - `MIPS-DATAPATH.md`, `MIPS-ISA.md`, `KMAP.md`, `PIPELINE.md`, `CRITICAL-PATH.md`, `COMPARE.md`, `ASM-EDITOR.md`
+   - `LEARN.md`, `OG-IMAGES.md`
+   - `VERIFY.md`, `RUNBOOK.md`
    - `GOTCHAS.md`, `OPEN-QUESTIONS.md`
 
 3. Every file under `adr/`.

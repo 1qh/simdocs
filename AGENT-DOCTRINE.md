@@ -63,9 +63,17 @@ Caught by: route-handler smoke test asserts every interactive surface returns fu
 
 ## Determinism mandate
 
-Same input → frame-accurate same animation. Fixed timestep, deterministic state machine, no `Math.random()` outside seeded contexts, no `Date.now()` inside hot loops, no system-dependent ordering.
+Same input → frame-accurate same animation. Per `DETERMINISM.md` — fixed timestep, deterministic state machine, no `Math.random()` outside seeded contexts, no `Date.now()` inside hot loops, no system-dependent ordering. Banned patterns enforced by `tools/lint/no-determinism-leak.ts`.
 
-Caught by: golden-trace tests — assemble a known program, step N cycles, hash the trace, compare to committed golden. Drift fails CI.
+Caught by: golden-trace tests + codec hash-stability + cross-machine CI hash test.
+
+## Performance mandate
+
+Every locked budget in `PERFORMANCE.md` is a CI gate, not a guideline. 60 fps locked, LCP ≤ 1.5s on cable, INP ≤ 100ms desktop. Bundle-size + Lighthouse-CI + frame-budget + heap-leak gates green per `adr/perf-budget.md`.
+
+## Accessibility mandate
+
+Every UI surface meets `A11Y.md` floor. WCAG AA contrast, full keyboard navigation per route matrix, screen-reader-discoverable 3D entities via DOM proxies, reduced-motion alternate UX. Color-blind palette variants ship. `axe-core` zero violations gated in CI.
 
 ## Caveman docs
 

@@ -72,6 +72,10 @@ Cloudflare:
 - HSTS on
 - No Workers, no KV, no D1, no Pages Functions, no R2 Worker bindings (per `adr/deploy-target.md` bearer-mode rules)
 
+## Service worker + PWA
+
+Per `adr/offline-pwa.md`. Next-pwa or Workbox registers a service worker at first visit. Caches app shell + assets + visited permalinks. Service worker version-tagged at build; new build deploys → subtle update-available toast on next visit.
+
 ## Verifier targets
 
 | Target | Asserts |

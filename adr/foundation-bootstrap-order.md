@@ -140,11 +140,17 @@ Dokploy + Cloudflare DNS/CDN + Convex self-host instance pointed at via `CONVEX_
 
 Caught by: `make verify.bearer` green + smoke against deployed URL.
 
+## Phase 17.5 — Service worker + PWA + OG cards + sitemap
+
+Per `adr/offline-pwa.md`, `OG-IMAGES.md`, `adr/seo-metadata.md`. Service worker registers + caches; ImageResponse OG routes serve dynamic cards; sitemap + robots green.
+
+Caught by: offline smoke + OG-card smoke + sitemap test.
+
 ## Phase 18 — Polish ratchet
 
-Per `book/PHILOSOPHY.md` strictness-ratchet — every lint added, every flag tightened, every gotcha captured, mutation-test coverage raised, perf budgets locked, a11y audited, golden-trace coverage expanded, verify.fresh exercised.
+Per `book/PHILOSOPHY.md` strictness-ratchet — every lint added, every flag tightened, every gotcha captured, mutation-test coverage raised per `adr/mutation-testing.md`, perf budgets locked per `adr/perf-budget.md`, a11y audited per `A11Y.md`, visual baselines locked per `adr/visual-regression.md`, golden-trace coverage expanded, verify.fresh exercised.
 
-Caught by: ledger gates all green at HEAD.
+Caught by: ledger gates all green at HEAD per `VERIFY.md`.
 
 ## Caught by overall
 

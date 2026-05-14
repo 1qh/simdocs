@@ -15,6 +15,12 @@ Single source of truth per concern. All consumers generated or derived.
 | Lint baseline | `simdocs/adr/lint-baseline.md` (spec-of-code) + `lintmax.config.ts` | Lintmax run |
 | Design tokens | `packages/design-tokens/src/*` | Every UI surface |
 | Env schema | `apps/backend/convex/env.ts` + `apps/web/server/env.ts` | Every env read |
+| Example library | `apps/web/content/examples/**/*.mdx` (frontmatter Zod-validated) | Example picker, golden-trace fixtures, learn-page cross-links |
+| Learn content | `apps/web/content/learn/**/*.mdx` | Routed pages under `/learn/*`, sitemap, search index |
+| Glossary | `simdocs/GLOSSARY.md` (spec-of-code) | `tools/lint/substrate-boundary.ts` token list, `tools/lint/glossary-coverage.ts` |
+| OG card layouts | `apps/web/src/app/api/og/[type]/[hash]/route.ts` | OG ImageResponse per `OG-IMAGES.md` |
+| Perf budgets | `simdocs/PERFORMANCE.md` (spec-of-code) | `tools/perf/budget.json`, Lighthouse-CI config, bundle-size config |
+| Keyboard matrix | `simdocs/A11Y.md` (spec-of-code) | `apps/web/src/lib/keyboard/bindings.ts` |
 
 ## Drift fences
 
