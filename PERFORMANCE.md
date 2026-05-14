@@ -207,6 +207,13 @@ Memory leak detection via Playwright `page.coverage` + heap snapshot diff betwee
 - HTTP/3 0-RTT enabled in Caddy config — instant resume for repeat visitors
 - Cross-Origin-Resource-Policy (CORP) header on served assets — `same-origin` for product, `cross-origin` for substrate OSS bundles when shareable
 - Resource Timing API client-side aggregation → `/api/rum` — per-asset latency, cache state, transfer size for tuning
+- Network Information API (`navigator.connection`) — adapt quality + prefetch eagerness to actual connection. `effectiveType` slow-2g/2g/3g/4g; `saveData=true` disables prerender, downgrades render quality, suppresses non-critical prefetch
+- `pointerrawupdate` events for input on high-refresh displays — uncoalesced pointer events for smooth scrub on 120Hz+
+- `<link rel="modulepreload">` for code-split bundles — bridges preload (eager) and prefetch (lazy); applied to next-likely route bundles
+- `navigator.scheduling.isInputPending()` (Chrome-only) inside long-running compute — yield when input pending, fallback to `scheduler.yield()` elsewhere
+- Predictive input for timeline scrubber — extrapolate pointer trajectory direction, pre-compute frames in anticipated direction via idle callback
+- `Save-Data` HTTP header respect — disable Speculation Rules, downgrade render quality to mid-tier, suppress non-critical prefetch
+- Priority Hints catalog — `fetchpriority="high"` on critical fonts + above-fold 3D bundle, `fetchpriority="low"` on prefetched far-route bundles + telemetry batches
 
 ## Anti-patterns banned
 
@@ -278,3 +285,7 @@ Memory leak detection via Playwright `page.coverage` + heap snapshot diff betwee
 - Server-Timing emission smoke — Route Handler responses carry breakdown header
 - Tab-visibility behavior smoke — telemetry batches flush only on visibility restore
 - Resource Timing aggregation RUM weekly review
+- Network Information API smoke — `effectiveType=slow-2g` mock disables prerender + downgrades quality
+- `Save-Data: on` request header smoke — quality downgraded + non-critical prefetch suppressed
+- `pointerrawupdate` smoke — high-refresh scrub receives uncoalesced events
+- `modulepreload` emission smoke — code-split chunks announced via link tag
