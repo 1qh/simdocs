@@ -33,11 +33,27 @@ state > 1KB compressed → /s/<blake3-truncated-16-chars>
 ## Canonicalization
 
 Per `packages/sim-engine` codec:
-- Object keys sorted deterministically
-- Numbers in shortest exact representation
+- Object keys sorted deterministically via `safe-stable-stringify`
+- Numbers in shortest exact representation (integer state preferred; banned: `NaN`, `Infinity`, `-0`)
 - Arrays untouched (order is part of the state)
-- zstd compression, fixed level
-- Output is canonical bytes; same state → same bytes → same hash
+- `Set` / `Map` / `BigInt` banned in canonical-path Zod schemas (safe-stable-stringify silently drops Sets/Maps; BigInt lossily coerces)
+- Schema-version byte prefix (cross-version hash collision-free)
+- Output is **uncompressed** canonical bytes; **hash uncompressed bytes** (compression artifacts vary across runtime versions)
+- Compression layer separate, transport-only
+
+## Compression for transport
+
+Hash uncompressed canonical bytes. Compress only for transport:
+
+- **Client + universal**: `CompressionStream("deflate-raw")` — no header / no checksum / no mtime → byte-identical across Chrome / Safari / Firefox / Node 21+ / Bun. Universal browser support 2024+.
+- **Server at-rest storage**: `Bun.zstdCompress` level 19 + `windowLog: 21` allowed — but pin zstd-version-byte in URL schema OR re-canonicalize before re-hashing on decode (Bun bumps zstd, output varies per version+level+window-log).
+
+URL fragment encodes compressed bytes as base64url:
+```
+canonical bytes → CompressionStream("deflate-raw") → base64url → /s#<payload>
+```
+
+`fzstd` / `pako` / `fflate` / `lz-string` all banned per pm4ai compression policy.
 
 ## Hash
 

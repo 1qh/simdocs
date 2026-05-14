@@ -4,6 +4,23 @@ Concrete timing + easing per transition. `UX-DOCTRINE.md` carries principles; th
 
 Every value here lives in `packages/design-tokens` as a typed token. Hand-typed durations / easings in product code are violations.
 
+## Animation engine
+
+- **DOM motion**: `motion` library (motion.dev — framer-motion rebrand). `motion/react` for declarative `<motion.div>` etc.
+- **Discrete 3D state transitions** (camera bookmarks, panel reveals): `motion`'s imperative `animate()` on Three properties. Works because `motion`'s `animate()` accepts any plain object — `Vector3` is `{x,y,z}`.
+  ```ts
+  import { animate } from 'motion';
+  animate(mesh.position, { x: 2, y: 1, z: 0 }, { duration: 0.4, ease: [0.2, 0.8, 0.2, 1] });
+  ```
+- **Continuous 3D tracking** (camera follow, focus pull, hover): `THREE.MathUtils.damp3` critically-damped springs in `useFrame` with module-level pooled `Vector3`. Frame-rate-independent, no overshoot.
+  ```ts
+  import { damp3 } from 'three/src/math/MathUtils';
+  useFrame((_, dt) => {
+    damp3(mesh.position, targetVec, 0.25, dt); // smoothTime 0.25s = snappy; 0.6s = soft
+  });
+  ```
+- **Banned**: `framer-motion-3d` (dead, succeeded by `motion`'s imperative `animate()` on three properties). `@react-spring/*` (pm4ai banned). `gsap` / `anime` / `lottie-*` (banned).
+
 ## Easing curves
 
 | Name | Bezier | Use |

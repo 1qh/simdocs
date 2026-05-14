@@ -86,9 +86,9 @@ mindmap
       axe-core a11y
       pa11y contrast
     Perf
-      bundlesize2 bundle gate
+      size-limit bundle gate (bundlesize2 unmaintained)
       lhci Lighthouse CI
-      r3f-perf frame budget
+      stats-gl frame budget (r3f-perf stale)
       web-vitals RUM
       memlab leak detection
       mitata micro benchmarks
@@ -98,7 +98,7 @@ mindmap
       Error boundary client side
       Platform managed error reporting
     PWA
-      next-pwa Workbox service worker
+      Serwist via at serwist slash next (next-pwa dead)
     OG
       Next ImageResponse
     Utility

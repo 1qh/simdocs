@@ -19,24 +19,33 @@ The permalink IS the proof that two clients running the same input produce ident
 ## Required guarantees
 
 1. **State-machine determinism** — `step(state, input) → state'` is a pure function. No randomness, no clocks, no system state read inside.
-2. **Animation determinism** — keyframes are deterministic functions of state + step index, not wall-clock-derived.
-3. **Codec determinism** — `serialize(state) → bytes` produces identical bytes across machines for identical state. Key ordering, number formatting, compression level fixed.
-4. **Hash determinism** — blake3 of identical bytes = identical hex. (Trivially satisfied by blake3.)
-5. **Cross-version replay** — old snapshots replay correctly under new code. Schema versions retained; deserializers kept.
+2. **Animation determinism** — keyframes are deterministic functions of state + step index + reduced-motion flag (from snapshot schema), not wall-clock-derived. Reduced-motion preserves `stepIndex → visual` mapping with `alpha = 1` (snap-to-end), only suppressing in-between interpolation.
+3. **Codec determinism** — `canonicalize(state) → bytes` produces identical bytes across machines for identical state. Key ordering via `safe-stable-stringify`, integer state for numbers, schema-version byte prefix.
+4. **Hash determinism** — blake3 of identical bytes = identical hex. **Hash uncompressed canonical bytes, not compressed**. Compression artifacts vary across runtime versions.
+5. **Compression for transport only** — use `CompressionStream("deflate-raw")` (universal, no header variance, byte-identical across Chrome/Safari/Firefox/Node 21+/Bun). `Bun.zstdCompress` ONLY for at-rest storage with explicit version pinning (zstd output varies across bun versions + level + window-log).
+6. **Cross-machine state+trace hash identity** — same input → identical state hash + trace hash across Linux x86 / macOS arm / Windows / dev laptops. Verified by CI matrix.
+7. **GPU pixel hash is per-renderer, NOT cross-machine identical** — visual regression baselines auto-suffix by platform (`name-darwin.png` / `name-linux.png` / `name-win.png`). Pair pixel tests with structural assertions (renderer.info, mesh-position hash) so green pixel isn't only signal. Use SwiftShader-only single baseline for purely-structural traces if GPU diff would otherwise dominate.
+8. **Cross-version replay** — old snapshots replay correctly under new code. Schema versions retained; deserializers kept. `__fixtures__/v{N}/*.json` committed at every version; CI replays each migration-chained against current engine, asserts identical `traceHash`.
 
 ## Banned in `sim-engine` source
 
 | Pattern | Banned because |
 |---|---|
-| `Math.random()` | Non-deterministic per call. Use seeded RNG passed in `state`. |
+| `Math.random()` | Non-deterministic per call. Use seeded RNG passed in `state`. Recommended: sfc32 (128-bit, fast, excellent PractRand quality), seeded via `blake3(seedString).slice(0,16)` → 4× u32. |
 | `Date.now()`, `performance.now()` | System clock leak. Use `state.cycle` or `state.tickCount`. |
 | `Object.keys(o)` for iteration order on plain objects | Insertion-order-dependent across runtimes (historically). Use sorted keys explicitly. |
-| `JSON.stringify(o)` without replacer | Key order undefined. Use canonical-stringify helper. |
-| `for...in` | Inherited keys vary. Use `Object.entries`. |
-| `Set` / `Map` iteration relied upon for state | Iteration order varies subtly. Sort explicitly. |
+| `JSON.stringify(o)` without replacer | Key order undefined. Use `safe-stable-stringify` canonical helper. |
+| `for...in` | Inherited keys vary. Use `Object.entries` after stable sort. |
+| `Set` / `Map` in canonical paths | `safe-stable-stringify` silently drops Sets and Maps (stringifies as `{}`). Sort + convert to plain object/array before serialize. Forbid in canonical-path Zod schemas via `.strict()`. |
+| `BigInt` in canonical paths | `safe-stable-stringify` default coerces to Number (lossy). Use `{ bigint: 'string' }` option or pre-encode as `{ $bigint: "123" }` envelopes. For MIPS register values use `Int32Array` typed state. |
+| `undefined` in canonical paths | Omitted in objects, becomes `null` in arrays. `[undefined, 1]` ≠ `[null, 1]` if round-tripped. Forbid via Zod `.strict().passthrough(false)`. |
+| `NaN`, `Infinity`, `-0` | JSON semantics → `null`. Ban in canonical paths via integer state. |
 | `requestAnimationFrame` callback state | Frame timing differs per machine. Animation tied to logical step, not wall-clock. |
-| Floating-point comparison (`===` on results of computation) | Bit-exact across platforms not always guaranteed. Use typed integer state where possible. |
+| Floating-point comparison (`===` on results of computation) | Bit-exact across platforms not always guaranteed. Use typed integer state (Q16.16 fixed-point) where possible. |
 | Locale-aware formatting (`toLocaleString`, `Intl.*`) | Locale varies. Use explicit format strings. |
+| `Intl.Collator` for canonical sort | Use plain `<` on UTF-16 code units. |
+| `Number.prototype.toString` for very small/large floats | Spec variance across runtime versions. Keep state integer. |
+| `crypto.randomUUID` for permalink IDs | Non-deterministic. Derive from `blake3(parent || index)` so links are content-addressed end-to-end. |
 
 ## Caught by
 

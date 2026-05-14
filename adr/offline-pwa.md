@@ -13,7 +13,7 @@ Service worker registered on first visit. Caches app shell + sim assets + visite
 
 ## Service worker shape
 
-- Tool: Workbox via `next-pwa` (locked per `adr/oss-import-audit.md`)
+- Tool: **Serwist** (`@serwist/next`) — `next-pwa` is dead (last meaningful release 2022). Serwist is Workbox-spirit with first-class App Router + Next 16 support, TypeScript service workers, and revision-keyed precache injection.
 - Caching strategy:
   - **App shell** (HTML, JS, CSS): `StaleWhileRevalidate`
   - **3D assets** (none today, but if any HDRI / fonts): `CacheFirst`, immutable

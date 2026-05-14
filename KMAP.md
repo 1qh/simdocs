@@ -65,10 +65,10 @@ Always computed live as user groups:
 ## Solver
 
 `packages/boolean` provides:
-- Quine-McCluskey for ≤6 vars, deterministic, returns all PIs + selects essential
-- Petrick's method for cover selection when multiple equivalent covers exist
-- Espresso heuristic for ≥7 vars (solver only, no geometry)
-- Multi-output minimization with shared-term sharing across outputs
+- **Hand-rolled Quine-McCluskey + Petrick** for ≤6 vars (no actively-maintained JS QM library in 2026 — all candidates failed active-maintenance gate or were class-project-grade). Hand-roll ~400 LOC with bitmask minterms (`Uint32Array` up to 32 vars, BigInt above). Cap exact QM at 8 vars (chart explosion); switch to Espresso beyond.
+- **`espresso-iisojs`** for ≥7-var heuristic — pure JS port of Espresso-II, native TS, MIT, ~5 KB gz. Single-output only; multi-output handled via per-output call + greedy term-sharing post-pass (~100 LOC).
+- **Hand-rolled hazard analysis** (~80 LOC) on top of QM output — pair-of-adjacent-1s sharing PI check, consensus-term suggestion.
+- **`chevrotain` v12** for Boolean expression parser (locked per `adr/oss-import-audit.md`). ANTLR-style error recovery + Monaco LSP integration via tokens-to-Monarch bridge.
 
 ## Step-through QM mode
 

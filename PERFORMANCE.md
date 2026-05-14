@@ -7,13 +7,13 @@ Explicit performance contract. Every budget is a CI gate; violation fails the bu
 | Metric | Budget | Measured at |
 |---|---|---|
 | LCP (Largest Contentful Paint) | ≤ 1.0s on cable, ≤ 2.0s on slow 4G | Real-user (RUM) + Lighthouse-CI synthetic |
-| INP (Interaction to Next Paint) | ≤ 16ms on desktop (single 60Hz frame), ≤ 50ms on mid-tier laptop, ≤ 100ms on mobile read-only | RUM + Playwright trace |
+| INP (Interaction to Next Paint) | ≤ 16ms median desktop, ≤ 50ms p75, ≤ 100ms p95 (sub-frame INP unrealistic at p75 across compositor-blocking interactions) | RUM via web-vitals v4+ with LoAF + Playwright trace |
 | CLS (Cumulative Layout Shift) | ≤ 0.01 | RUM + Lighthouse-CI |
 | TBT (Total Blocking Time) | ≤ 100ms | Lighthouse-CI |
 | TTI (Time to Interactive) | ≤ 2.0s on cable | Lighthouse-CI |
 | TTFB (Time to First Byte) | ≤ 200ms edge-cached, ≤ 500ms origin | RUM + Caddy access log |
 | Step-animation transition | ≤ 400ms total, no dropped frames | Playwright trace |
-| Long task count (RUM) | 0 tasks > 50ms during steady interaction | PerformanceObserver in `apps/web/src/lib/rum.ts` |
+| LoAF blocking duration | 0 frames blocking > 50ms during steady interaction; longtask fallback for older browsers | `PerformanceObserver({ type: 'long-animation-frame' })` in `apps/web/src/lib/rum.ts` with longtask fallback |
 | Active DOM nodes per route | ≤ 500 | Playwright DOM count assertion |
 
 ## Frame budget
@@ -118,7 +118,7 @@ Memory leak detection via Playwright `page.coverage` + heap snapshot diff betwee
 
 | Gate | Tool | Threshold |
 |---|---|---|
-| Bundle-size budget | `bundlesize2` or equivalent | Per-route budget above |
+| Bundle-size budget | `size-limit` (bundlesize2 unmaintained) | Per-route budget above |
 | Bundle diff per PR | `next-bundle-analyzer` + CI comment | Regression > 5% flagged on PR |
 | Lighthouse-CI synthetic | `@lhci/cli` | LCP, INP, CLS, TBT, TTFB per budgets above |
 | Playwright trace | Playwright `--trace on` | INP, dropped frame count, frame p99 |
@@ -126,12 +126,12 @@ Memory leak detection via Playwright `page.coverage` + heap snapshot diff betwee
 | `memlab` leak detection | Meta's memlab CI | Detached DOM / closure leaks |
 | Long-task RUM aggregate | PerformanceObserver client → `/api/rum` | 0 tasks > 50ms during interaction |
 | DOM node count | Playwright | ≤ 500 active per route |
-| 3D frame timing | `r3f-perf` + Playwright | Locked frame budget over 10s sample |
+| 3D frame timing | `stats-gl` (r3f-perf stale) + Playwright | Locked frame budget over 10s sample |
 | Draw-call audit | Three.js renderer.info | Per-scene draw-call budget |
 | Shader compile time | Custom probe | First-use compile ≤ 100ms; AOT verified |
 | Sim-engine micro-benchmark | `mitata` or equivalent | Per-operation budgets above |
 | Network protocol assertion | curl + smoke | HTTP/3 negotiated when available |
-| Early Hints assertion | curl smoke | 104 Early Hints emitted on slow paths |
+| Early Hints assertion | curl smoke | 103 Early Hints emitted on slow paths |
 | Cache hit ratio | CF Analytics API or origin log analysis | ≥ 95% weekly |
 
 ## Optimization patterns (locked)
@@ -150,7 +150,7 @@ Memory leak detection via Playwright `page.coverage` + heap snapshot diff betwee
 - Pre-warmed Worker pool at app boot — QM + assembler + pipeline workers idle-warm, zero spin on first heavy compute
 - Texture KTX2 + zstd for any future raster (currently none per asset-authoring ADR)
 - HTTP/3 + Brotli compression at Caddy (level 6 dynamic, level 11 static at build)
-- 104 Early Hints via Caddy — preload critical fonts + 3D bundle while origin computes
+- 103 Early Hints via Caddy — preload critical fonts + 3D bundle while origin computes
 - Web Workers for compute > 16ms (QM, Espresso, pipeline analyzer, assembler for > 100 line programs)
 - Pixel ratio capped at 2 on high-DPI displays to prevent over-rendering
 - `contain: strict` on 3D scene container for layout isolation
@@ -162,7 +162,7 @@ Memory leak detection via Playwright `page.coverage` + heap snapshot diff betwee
 - `cache()` from React 19 for RSC fetch deduping within a request
 - `fetchpriority="high"` on critical fonts + above-fold 3D bundle
 - View Transitions API for cross-route navigation (Next 16 native)
-- Speculation Rules API — prerender likely-next routes on hover/idle (per `adr/speculative-loading.md`)
+- Speculation Rules API — prerender likely-next routes on hover/idle (per `adr/speculative-loading.md`). **Gate analytics on `document.prerendering === false` + listen for `prerenderingchange`** to avoid double-counting on prerender.
 - Stale-while-revalidate at CDN — survive flagged-then-purge edge race for permalink reads
 - Preemptive scrub seeking — when user drags timeline scrubber, pre-compute frames ahead of cursor in idle gap
 - Service Worker pre-caching of likely-next-routes on idle (PWA layer)
@@ -204,10 +204,10 @@ Memory leak detection via Playwright `page.coverage` + heap snapshot diff betwee
 - `CompressionStream` / `DecompressionStream` (native) for client-side zstd decode of snapshot bodies; `Bun.zstdDecompress` / `Bun.zstdCompress` for server-side
 - `scheduler.yield()` inside extended `useFrame` work units — keeps frame budget elastic when heavy compute leaks into render path
 - `will-change` CSS audit — applied only to elements provably benefitting from compositor promotion, removed when no longer animating
-- HTTP/3 0-RTT enabled in Caddy config — instant resume for repeat visitors
+- HTTP/3 0-RTT enabled in Caddy config — instant resume for repeat visitors. **Never for POST / mutation requests** — Chrome 145+ surfaces 425 Too Early to JS rather than retry. GET/HEAD/OPTIONS only.
 - Cross-Origin-Resource-Policy (CORP) header on served assets — `same-origin` for product, `cross-origin` for substrate OSS bundles when shareable
-- Resource Timing API client-side aggregation → `/api/rum` — per-asset latency, cache state, transfer size for tuning
-- Network Information API (`navigator.connection`) — adapt quality + prefetch eagerness to actual connection. `effectiveType` slow-2g/2g/3g/4g; `saveData=true` disables prerender, downgrades render quality, suppresses non-critical prefetch
+- Resource Timing API client-side aggregation → `/api/rum` — per-asset latency, cache state, transfer size for tuning. `Timing-Allow-Origin: *` required on Convex + CF responses for cross-origin phases to be visible to JS.
+- Network Information API (`navigator.connection`) — Chromium-only (Firefox/Safari don't expose). Server-side `Save-Data` HTTP header gate is more reliable; `effectiveType` slow-2g/2g/3g/4g + `saveData=true` disables prerender, downgrades render quality, suppresses non-critical prefetch
 - `pointerrawupdate` events for input on high-refresh displays — uncoalesced pointer events for smooth scrub on 120Hz+
 - `<link rel="modulepreload">` for code-split bundles — bridges preload (eager) and prefetch (lazy); applied to next-likely route bundles
 - `navigator.scheduling.isInputPending()` (Chrome-only) inside long-running compute — yield when input pending, fallback to `scheduler.yield()` elsewhere
@@ -266,12 +266,12 @@ Memory leak detection via Playwright `page.coverage` + heap snapshot diff betwee
 - Lighthouse-CI gate (LCP / INP / CLS / TBT / TTFB)
 - Playwright performance trace + DOM node count
 - Heap-snapshot diff smoke + `memlab` leak detection
-- r3f-perf overlay in dev (locked threshold, fails dev build if breached)
+- stats-gl overlay (replaces stale r3f-perf) in dev (locked threshold, fails dev build if breached)
 - Draw-call budget assertion in dev
 - Shader-compile probe smoke (AOT verified)
 - Sim-engine micro-benchmark CI
 - HTTP/3 negotiation smoke
-- 104 Early Hints emission smoke
+- 103 Early Hints emission smoke
 - CDN cache hit ratio weekly review
 - Long-task RUM aggregate (zero > 50ms during interaction)
 - Worker-warmup smoke (workers responsive within 5ms of first message)

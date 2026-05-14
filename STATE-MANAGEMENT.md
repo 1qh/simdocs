@@ -67,6 +67,8 @@ Write via: same
 
 Per-device preferences, no need to roundtrip URL or hit Convex.
 
+**Zustand `persist` + RSC**: `skipHydration: true` mandatory; otherwise first paint diverges. Server renders defaults; client rehydrates in `useEffect`. `partialize` strictly allowlist (never denylist) so sim-slice keys never leak into localStorage.
+
 ### IndexedDB
 
 Owns:
@@ -103,6 +105,10 @@ Default fallback when none of the above layers fit.
 ### sim-engine (headless)
 
 Owns nothing persistent. Pure functions over state passed in. State is held by zustand; sim-engine produces next state per step. Per `DETERMINISM.md`.
+
+### Convex optimistic vs `useOptimistic`
+
+When mutating Convex data, use **Convex's `useMutation().withOptimisticUpdate()`** (integrates with reactive store, auto-rollback on error). Reserve React 19 `useOptimistic` for non-Convex Server Actions only. Mixing both causes double-flicker.
 
 ## Decision matrix
 

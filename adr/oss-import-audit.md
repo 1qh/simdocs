@@ -85,21 +85,40 @@ CI gate: pm4ai itself runs a banned-deps check (`pm4ai status` reports violation
 
 ### Boolean minimization (QM / Petrick / Espresso / hazard analysis)
 
-Scan candidates:
-- `qm-solver` — npm, last release evaluated at scan time per active-maintenance gate
-- `quine-mccluskey-js` — npm
-- `logicminimizer.js` — npm
-- `boolean-algebra-js` — npm
-- `bool-minimize` — npm
-- `karnaugh-map` — npm
+**Scan complete (May 2026)**: NO actively-maintained JS QM library exists. All candidates failed the active-maintenance gate or are class-project-grade with no don't-cares discipline / multi-output / typed Petrick.
 
-Locked pick: TBD at scan time — agent runs npm search + checks each against active-maintenance gate + surface fit + license + TS types. Chosen lib wrapped by `packages/boolean` which adds:
+| Package | State | Verdict |
+|---|---|---|
+| `@helander/quine-mccluskey-js` | Jan 2024 release, fails 6-mo gate | Toy-grade. Reject. |
+| `quine-mccluskey-js` | ~2020, single-output only | Stale. Reject. |
+| `quine-mccluskey` (root) | ~2017 | Dead. Reject. |
+| `boolean-exp-minimizer` (emavola) | 2021, single-output | Stale. Reject. |
+| `karnaugh-map` (npm) | Not maintained on npm | Reject. |
+
+**Locked picks**:
+- **Hand-roll QM + Petrick** (~400 LOC) — bitmask minterms (`Uint32Array` up to 32 vars, BigInt above), exact for ≤8 vars (chart-explosion cap), Petrick branch-and-bound with `AbortSignal` cancellation. Substrate exposes intermediate state (prime-implicant chart, essential-PI flags, group-membership masks) for interactive UI grouping highlight + hazard analysis. No library exposes that.
+- **`espresso-iisojs`** for ≥7-var heuristic — pure JS port of Espresso-II by genieacs, MIT, native TypeScript, ~5 KB gz. Single-output only; wrap to handle multi-output via per-output call + greedy term-sharing post-pass.
+- **Hand-roll hazard analysis** (~80 LOC) on top of QM output — adjacent-minterm pair check for PI-sharing in cover, consensus-term suggestion when missing.
+- **Hand-roll K-map geometry** (~150 LOC) for 2D Gray-code layout + 5/6-var split-panel and 3D toroidal. Tightly coupled to render layer, library would be net-negative.
+
+**WASM SIMD deferred** — for ≤8-var bitmask QM, JS runs <50ms; espresso-iisojs handles 12-var typical inputs <500ms. WASM SIMD (compiling classabbyamp/espresso-logic with Emscripten + `-msimd128`) gives ~3-5x on implicant-expand inner loop but adds toolchain + 80KB WASM + COOP/COEP if threading. Defer until 12+ var profile pain. Adapter shape allows one-file swap.
+
+Substrate `packages/boolean` wraps everything with:
 - Typed input/output via Zod
-- Cancellation via AbortSignal
-- Worker-pool integration for partition strategy
-- Cross-link helper for datapath truth-table ingestion
+- Cancellation via AbortSignal (checked between Petrick branches)
+- Worker-pool integration for truth-table partition strategy
+- Cross-link helper `loadFromControl(opcode_bits, signal_name)` — builds truth table by simulating MIPS control ROM for every opcode, feeds minterms into `solve()`
 
-If NO library passes active-maintenance gate + surface fit: hand-roll inside `packages/boolean` is justified (the substrate becomes the canonical OSS contribution for this gap). ADR amended with rejection rationale per candidate.
+Adapter pattern in `solver/adapter.ts`:
+```ts
+export async function solve(raw: unknown, signal: AbortSignal): Promise<SolveResult> {
+  const input = SolveInput.parse(raw);
+  const useExact = input.mode === "exact" || (input.mode === "auto" && input.vars.length <= 8);
+  return useExact ? qmExact(input, signal) : espressoHeuristic(input, signal);
+}
+```
+
+Result shape exposes prime implicants, essential PIs, minimal SOP/POS, hazards (pair + cover PI), stats (algorithm + ms).
 
 ### MIPS assembler / disassembler
 

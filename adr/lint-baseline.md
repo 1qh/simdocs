@@ -41,9 +41,9 @@ If a code-lint concern is not covered by lintmax: file upstream against lintmax 
 | `axe-core` (via Playwright) | Zero WCAG AA violations per `A11Y.md` |
 | `pa11y` | Contrast budgets per `A11Y.md` |
 | `@lhci/cli` | Lighthouse-CI gates per `adr/perf-budget.md` |
-| `bundlesize2` | Bundle-size gates per `adr/perf-budget.md` |
+| `size-limit` | Bundle-size gates per `adr/perf-budget.md` |
 | `memlab` | Heap-leak detection per `adr/perf-budget.md` |
-| `r3f-perf` | Frame budget per `PERFORMANCE.md` |
+| `stats-gl` | Frame budget per `PERFORMANCE.md` |
 | `mitata` | Sim-engine micro-benchmarks per `adr/compute-budgets.md` |
 
 ## Project-specific non-code lints (hand-rolled `tools/lint/*.ts`)
