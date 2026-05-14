@@ -118,6 +118,128 @@ WebGPU `GPUDevice.createCommandEncoder()` allows multiple concurrent encoders. R
 
 WebGL fallback path serializes by API design; WebGPU is the parallel gain.
 
+## WebGPU 3-queue model
+
+WebGPU exposes graphics + compute + transfer as independent queues. All three can have work in flight simultaneously:
+
+```mermaid
+flowchart LR
+    GraphicsQ[Graphics queue<br/>draw calls per frame] --> GPU
+    ComputeQ[Compute queue<br/>future: WebGPU compute solver] --> GPU
+    TransferQ[Transfer queue<br/>buffer uploads from Geometry worker] --> GPU
+```
+
+Discipline: buffer uploads use transfer queue (`queue.writeBuffer` chooses correct queue automatically). Compute work submitted to compute queue. Draw calls on graphics queue. GPU pipelines all three.
+
+WebGL fallback exposes single queue; serialization unavoidable. WebGPU is the concurrent-GPU gain.
+
+## Work-stealing pool
+
+Solver workers, snapshot-decode pool, and pipeline-analyzer pool share a unified work-stealing scheduler:
+
+```mermaid
+flowchart LR
+    QueueA[Solver queue] --> Worker1[Worker 1]
+    QueueB[Decode queue] --> Worker2[Worker 2]
+    QueueC[Pipeline queue] --> Worker3[Worker 3]
+    Worker1 -. steal .-> QueueB
+    Worker1 -. steal .-> QueueC
+    Worker2 -. steal .-> QueueA
+    Worker3 -. steal .-> QueueA
+```
+
+When a worker's owned queue empties, it polls sibling queues. First non-empty wins. Cross-pool steal eliminates idle workers when one workload spikes.
+
+Implementation: Comlink-bridged shared MessageChannel for steal coordination; each worker advertises idle state.
+
+## Concurrent frustum culling
+
+Visibility computation off main thread. Render worker, when not actively rendering, runs frustum-cull pass against scene BVH; emits visible-set to its own render queue. Idle gap = compute gap, not render gap.
+
+For static datapath scene (which is most frames), culling result cached + invalidated only on camera move.
+
+## Streaming response chunked-parallel processing
+
+For snapshot loads beyond URL-fragment tier, response body streamed:
+
+```ts
+const reader = response.body.getReader();
+const chunks: Uint8Array[] = [];
+while (true) {
+  const { done, value } = await reader.read();
+  if (done) break;
+  // dispatch chunk to worker for incremental zstd-decode + hash-update
+  workerPool.dispatch({ kind: 'decode-chunk', value });
+  chunks.push(value);
+}
+const state = await workerPool.finalize();
+```
+
+Decode + hash overlap with network read; wall-clock = network latency + minimal compute.
+
+## Worker lifecycle policy
+
+All workers in pool: pre-warmed at app boot, kept permanent for the session. Memory cost ~2-3MB per worker × ~6-8 workers = 15-25MB. Acceptable for instant-availability tradeoff.
+
+Workers NOT terminated on idle. Justification:
+- Sim worker, render worker, geometry worker hold scene state that's expensive to rebuild
+- Solver workers hold compiled code + caches
+- Terminate-and-respawn cost (50-150ms) negates the memory savings
+
+Workers reaped only on:
+- Tab close
+- `beforeunload`
+- Programmatic `worker.terminate()` for explicit cleanup (rare)
+
+## Generator-based cooperative multitasking
+
+Long-running synchronous computations expressed as generators yielding between work units:
+
+```ts
+function* solveQM(input: TruthTable): Generator<Progress, Result, void> {
+  for (let i = 0; i < combinations.length; i++) {
+    if (i % 1000 === 0) yield { kind: 'progress', i, total };
+    // ... combine + mark
+  }
+  return { kind: 'result', minimal };
+}
+
+// driver:
+const gen = solveQM(input);
+let step = gen.next();
+while (!step.done) {
+  await scheduler.yield();  // cooperative pause
+  step = gen.next();
+}
+```
+
+Finer-grained than `scheduler.yield()` between bulk calls — yield points expressed inside the computation.
+
+Use cases:
+- Iterative QM/Espresso solver (between combination rounds)
+- Pipeline analyzer (between cycle ticks)
+- Assembler (between source-file segments)
+- Snapshot canonical encoding (between top-level keys)
+
+## Background Fetch API
+
+For bulk operations the user may navigate away from (large `/me` snapshot fetch, batch OG card pre-generation):
+
+```ts
+const reg = await navigator.serviceWorker.ready;
+await reg.backgroundFetch.fetch('bulk-snapshots', urls, {
+  title: 'Loading saved snapshots',
+});
+```
+
+Service Worker handles fetch in background; result available when user returns. Survives tab navigation.
+
+## Concurrent batch OG card pre-generation
+
+Build-time: common OG card variants (per-instruction datapath cards, common K-map exercise cards) pre-rendered in parallel via `Promise.all` across hashes. Output committed to `/public/og/*`; CDN serves direct.
+
+Per-snapshot dynamic OG cards still generated at request time via `ImageResponse` per `OG-IMAGES.md`.
+
 All workers pre-warmed at app boot per `PERFORMANCE.md` "Pre-warmed Worker pool" rule.
 
 ## Parallel solver via truth-table partitioning
@@ -334,3 +456,11 @@ Server Actions + Route Handlers always `Promise.all` for independent fs / Convex
 - Bulk snapshot decode smoke — 50 snapshots decoded in parallel within budget
 - OPFS cache hit smoke — solver re-run with same input returns cached result
 - WebGPU parallel encoder smoke — multi-pass scene submits without sequential lock
+- Work-stealing smoke — busy queue + idle pool member triggers steal within 1ms
+- WebGPU 3-queue smoke — buffer write + compute submit + draw call all in flight concurrently
+- Frustum cull worker smoke — visibility computed off-main, render uses cached visible-set
+- Streaming chunk smoke — large snapshot decode overlaps with network read, total wall-clock = network only
+- Worker pool memory smoke — pre-warmed pool steady-state memory < 30MB
+- Generator yield smoke — long-running solve yields every 1000 combinations, INP stays ≤ budget
+- Background Fetch smoke — bulk request continues after tab navigation
+- Batch OG card smoke — N cards pre-render in parallel during build, output committed
