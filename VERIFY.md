@@ -141,15 +141,15 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 ### Format + lint
 
-- [ ] `format` — `bun run fix` exits silent
+- [x] `format` — `bun run fix` exits silent
 - [ ] `lint.disable-reasons` — `tools/lint/disable-reasons.ts`
-- [ ] `lint.no-school-refs` — `tools/lint/no-school-refs.ts`
-- [ ] `lint.atemporal-docs` — `tools/lint/atemporal-docs.ts`
-- [ ] `lint.no-fallback` — `tools/lint/zero-fallback.ts`
+- [x] `lint.no-school-refs` — `tools/lint/no-school-refs.ts`
+- [x] `lint.atemporal-docs` — `tools/lint/atemporal-docs.ts`
+- [x] `lint.no-fallback` — `tools/lint/zero-fallback.ts`
 - [ ] `lint.no-infinite-wait` — `tools/lint/check-no-infinite-wait.ts`
-- [ ] `lint.no-determinism-leak` — `tools/lint/no-determinism-leak.ts`
-- [ ] `lint.substrate-boundary` — `tools/lint/substrate-boundary.ts`
-- [ ] `lint.agent-first-output` — `tools/lint/agent-first-output.ts`
+- [x] `lint.no-determinism-leak` — `tools/lint/no-determinism-leak.ts`
+- [x] `lint.substrate-boundary` — `tools/lint/substrate-boundary.ts`
+- [x] `lint.agent-first-output` — `tools/lint/agent-first-output.ts`
 - [ ] `lint.cloudflare-bearer` — `tools/lint/cloudflare-bearer.ts`
 - [ ] `lint.no-dangerous-html` — `tools/lint/no-dangerously-set-inner-html.ts`
 - [ ] `lint.no-third-party-trackers` — `tools/lint/no-third-party-trackers.ts`
