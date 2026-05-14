@@ -156,7 +156,7 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 ### Type check
 
-- [ ] `tsc.bits`
+- [x] `tsc.bits`
 - [ ] `tsc.boolean`
 - [ ] `tsc.design-tokens`
 - [ ] `tsc.editor`
@@ -180,7 +180,7 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 ### Unit tests
 
-- [ ] `test.unit.bits`
+- [x] `test.unit.bits`
 - [ ] `test.unit.boolean`
 - [ ] `test.unit.design-tokens`
 - [ ] `test.unit.editor`
@@ -188,7 +188,7 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 - [ ] `test.unit.sim-engine`
 - [ ] `test.unit.three-kit`
 - [ ] `test.unit.apps-web`
-- [ ] `test.property.bits`
+- [x] `test.property.bits`
 - [ ] `test.property.boolean`
 - [ ] `test.property.sim-engine`
 - [ ] `test.codec-roundtrip`
