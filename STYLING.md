@@ -36,8 +36,7 @@ App imports `tokens.css` at root layout. Every utility class resolves to a token
 - Tailwind utilities for layout, spacing, color, typography, sizing
 - CSS Modules for component-scoped complex styles (file naming: `Component.module.css`)
 - CSS-variable references (`var(--color-bg-primary)`) inside Module CSS
-- `clsx` or `tw-merge` for conditional class composition
-- `cva` (class-variance-authority) for component variants
+- `cn()` from `@/lib/cn` (or `packages/design-tokens` substrate export) for ALL conditional class composition — `cn()` is the only allowed composition utility. Wraps `clsx` + `tailwind-merge` internally so utility precedence resolves correctly. Lintmax rule enforces this; bare `clsx` / `twMerge` / template-literal class string assembly is a violation.
 
 ### Banned
 
@@ -51,26 +50,43 @@ App imports `tokens.css` at root layout. Every utility class resolves to a token
 
 ### Class composition pattern
 
-```tsx
-import { cva } from 'class-variance-authority';
-import clsx from 'clsx';
+`cn()` is the only allowed composition utility. Defined once, consumed everywhere:
 
-const button = cva('inline-flex items-center justify-center rounded-md', {
-  variants: {
-    variant: {
-      primary: 'bg-accent text-accent-fg',
-      secondary: 'border border-fg text-fg',
-      ghost: 'text-fg hover:bg-bg-elevated',
-    },
-    size: {
-      sm: 'h-8 px-3 text-sm',
-      md: 'h-10 px-4 text-base',
-      lg: 'h-12 px-5 text-lg',
-    },
-  },
-  defaultVariants: { variant: 'primary', size: 'md' },
-});
+```ts
+// packages/design-tokens/src/cn.ts (substrate export)
+import { clsx, type ClassValue } from 'clsx';
+import { twMerge } from 'tailwind-merge';
+
+export function cn(...inputs: ClassValue[]): string {
+  return twMerge(clsx(inputs));
+}
 ```
+
+Usage:
+
+```tsx
+import { cn } from '@/lib/cn';
+
+export function Button({ variant, size, className, ...rest }: ButtonProps) {
+  return (
+    <button
+      className={cn(
+        'inline-flex items-center justify-center rounded-md',
+        variant === 'primary' && 'bg-accent text-accent-fg',
+        variant === 'secondary' && 'border border-fg text-fg',
+        variant === 'ghost' && 'text-fg hover:bg-bg-elevated',
+        size === 'sm' && 'h-8 px-3 text-sm',
+        size === 'md' && 'h-10 px-4 text-base',
+        size === 'lg' && 'h-12 px-5 text-lg',
+        className,
+      )}
+      {...rest}
+    />
+  );
+}
+```
+
+Variant shape: inline conditional class composition via `cn()`, not external variant libraries (no `cva` / `class-variance-authority`). The lintmax rule enforces `cn()` as the only allowed composition path; bare `clsx`, `twMerge`, `cva`, or string-template-class assembly is a violation.
 
 ## Color-blind palette switching
 
@@ -101,4 +117,5 @@ Single near-black palette by default. Light mode NOT in floor — per `UX-DOCTRI
 - `tools/lint/no-inline-styles.ts` greps for `style={{` in JSX
 - `tools/lint/no-arbitrary-tailwind.ts` greps for Tailwind arbitrary-value syntax
 - `tools/lint/tokens-only.ts` asserts no hex / rgb / px-as-spacing literals in CSS Modules
+- **lintmax rule** enforces `cn()` as the only allowed class-composition utility; flags any direct `clsx` / `twMerge` / `cva` import or string-template class assembly
 - CSS bundle-size CI gate per `adr/perf-budget.md`

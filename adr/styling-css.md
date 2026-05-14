@@ -40,8 +40,13 @@ Escape valve for:
 
 Non-Tailwind apps can still consume design-tokens.
 
+## Class composition
+
+`cn()` is the only allowed composition utility — defined once in `packages/design-tokens` (substrate) as `twMerge(clsx(...))` wrapper. Lintmax rule enforces this. No `cva`, no bare `clsx`, no bare `twMerge`, no template-literal class assembly. Per `STYLING.md`.
+
 ## Caught by
 
 - `tools/lint/no-css-in-js.ts` greps for emotion / styled-components / stitches imports
 - `tools/lint/no-arbitrary-tailwind.ts` greps for `[#...]` / `[123px]` arbitrary values
 - `tools/lint/tokens-only.ts` asserts CSS Modules use only `var(--token)` references for color / spacing / typography
+- Lintmax `cn()`-only rule (operator-existing) — enforces single composition path
