@@ -58,6 +58,16 @@ Zod v4 schema in `apps/web/server/env.ts` + `apps/backend/convex/env.ts`. Per `b
 - HSTS on at Cloudflare
 - Always-HTTPS redirect
 
+## Responsible disclosure
+
+Substrate packages are public OSS. Vulnerability disclosures are accepted via private email to the maintainer (address provided in the substrate repo's `SECURITY.md`, never public issue).
+
+Triage:
+- Acknowledge within 72h
+- Fix or patched-mitigation within 14 days for high-severity
+- Public disclosure after fix lands, with credit to reporter unless they opt out
+- CVE assignment for confirmed vulnerabilities affecting OSS substrate
+
 ## Caught by
 
 - `tools/lint/no-dangerously-set-inner-html.ts` greps for `dangerouslySetInnerHTML` anywhere
