@@ -203,16 +203,16 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 ### Golden traces — datapath-animated instructions
 
-- [ ] `test.golden.add`
-- [ ] `test.golden.addi`
-- [ ] `test.golden.and`
-- [ ] `test.golden.beq`
-- [ ] `test.golden.bne`
-- [ ] `test.golden.lw`
-- [ ] `test.golden.or`
-- [ ] `test.golden.slt`
-- [ ] `test.golden.sub`
-- [ ] `test.golden.sw`
+- [x] `test.golden.add`
+- [x] `test.golden.addi`
+- [x] `test.golden.and`
+- [x] `test.golden.beq`
+- [x] `test.golden.bne`
+- [x] `test.golden.lw`
+- [x] `test.golden.or`
+- [x] `test.golden.slt`
+- [x] `test.golden.sub`
+- [x] `test.golden.sw`
 
 ### Golden traces — encodable extension
 
