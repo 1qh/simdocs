@@ -26,6 +26,18 @@ Hand-roll bans:
 - GPU detection (`detect-gpu`)
 - Syntax highlighting (`shiki`)
 
+## Code linting NOT in scope
+
+`lintmax` (operator-owned, source at the path in agent memory) is the single entry point for all code linting — biome + oxlint + eslint orchestrated internally with operator-curated config.
+
+Banned in this project's audit scope:
+- Adding eslint plugins / rules / configs directly
+- Adding stylelint
+- Adding dependency-cruiser, knip, depcheck, size-limit (alternatives to bundlesize2)
+- Any code-lint tool overlapping lintmax surface
+
+Per `adr/lint-baseline.md`. If a code-lint pattern not covered by lintmax surfaces during build, file upstream against `lintmax`; do not add tool to this project.
+
 ## Per-concern audit
 
 ### Boolean minimization (QM / Petrick / Espresso / hazard analysis)

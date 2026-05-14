@@ -13,7 +13,7 @@ Service worker registered on first visit. Caches app shell + sim assets + visite
 
 ## Service worker shape
 
-- Tool: Workbox or hand-rolled (Workbox via `next-pwa` is the simplest)
+- Tool: Workbox via `next-pwa` (locked per `adr/oss-import-audit.md`)
 - Caching strategy:
   - **App shell** (HTML, JS, CSS): `StaleWhileRevalidate`
   - **3D assets** (none today, but if any HDRI / fonts): `CacheFirst`, immutable

@@ -32,7 +32,7 @@ Built at build time:
 - Per-result: icon + title + breadcrumb path
 - Arrow keys navigate, Enter selects, Esc closes
 - Empty input shows "recent" + "suggested next actions" based on current route
-- Fuzzy search via `fzf`-style scorer (e.g., `fzf-for-js` or hand-rolled)
+- Fuzzy search via `mini-search` (locked per `adr/oss-import-audit.md`)
 
 ## Search index entry shape
 

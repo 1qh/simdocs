@@ -46,7 +46,7 @@ Both 2D and 3D modes share:
 | Mode | Source |
 |---|---|
 | Truth table | Cell-by-cell entry, paste tab-separated text |
-| Boolean expression | Live-parsed via custom grammar (Monaco editor) |
+| Boolean expression | Live-parsed via `chevrotain` grammar (Monaco editor) |
 | Minterm list | `Σm(0,2,5,…)` notation |
 | Maxterm list | `ΠM(1,3,4,…)` notation |
 | Don't-care list | `d(0,2,…)` |

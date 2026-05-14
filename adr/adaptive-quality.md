@@ -10,7 +10,7 @@
 const tier = (() => {
   const cores = navigator.hardwareConcurrency ?? 4;
   const memory = (navigator as any).deviceMemory ?? 4;  // GB
-  const gpuHint = detectGpuTier();  // adapted from detect-gpu or hand-rolled
+  const gpuHint = detectGpuTier();  // via `detect-gpu` package, locked per `adr/oss-import-audit.md`
   if (cores >= 8 && memory >= 8 && gpuHint >= 2) return 'high';
   if (cores >= 4 && memory >= 4 && gpuHint >= 1) return 'mid';
   return 'low';

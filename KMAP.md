@@ -7,7 +7,7 @@ Karnaugh map tool spec. Geometry split per `adr/kmap-geometry.md` — 2D for ≤
 | Mode | Source |
 |---|---|
 | Truth table | Cell-by-cell entry, paste tab-separated, paste CSV |
-| Boolean expression | Live-parsed via custom grammar in Monaco editor — supports `*`, `+`, `'`, `!`, `&&`, `\|\|`, `~`, `XOR`, `XNOR`, parens, var names `A..Z`, `x0..xN` |
+| Boolean expression | Live-parsed via `chevrotain` grammar (locked per `adr/oss-import-audit.md`) wired into Monaco — supports `*`, `+`, `'`, `!`, `&&`, `\|\|`, `~`, `XOR`, `XNOR`, parens, var names `A..Z`, `x0..xN` |
 | Minterm list | `Σm(0,2,5,...)` or `f = m(0,2,5,...)` |
 | Maxterm list | `ΠM(1,3,4,...)` |
 | Don't-care list | `d(0,2,...)` or per-cell X |
