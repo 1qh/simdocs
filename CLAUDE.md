@@ -17,6 +17,7 @@ Every Claude session that touches this project runs in this exact order before a
    - `UX-DOCTRINE.md` — industrial 3D UX
    - `A11Y.md` — accessibility floor
    - `PERFORMANCE.md` — perf contract
+   - `CONCURRENCY.md` — concurrency + parallelism contract
    - `DETERMINISM.md` — reproducibility contract
    - `STACK.md` — locked picks
    - `API-CONVENTIONS.md`, `GLOSSARY.md`, `OBSERVABILITY.md`
