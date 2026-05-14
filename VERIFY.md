@@ -158,7 +158,7 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 - [x] `tsc.bits`
 - [ ] `tsc.boolean`
-- [ ] `tsc.design-tokens`
+- [x] `tsc.design-tokens`
 - [ ] `tsc.editor`
 - [ ] `tsc.hud`
 - [ ] `tsc.sim-engine`
@@ -182,7 +182,7 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 - [x] `test.unit.bits`
 - [ ] `test.unit.boolean`
-- [ ] `test.unit.design-tokens`
+- [x] `test.unit.design-tokens`
 - [ ] `test.unit.editor`
 - [ ] `test.unit.hud`
 - [ ] `test.unit.sim-engine`
