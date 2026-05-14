@@ -166,6 +166,28 @@ Memory leak detection via Playwright `page.coverage` + heap snapshot diff betwee
 - Stale-while-revalidate at CDN — survive flagged-then-purge edge race for permalink reads
 - Preemptive scrub seeking — when user drags timeline scrubber, pre-compute frames ahead of cursor in idle gap
 - Service Worker pre-caching of likely-next-routes on idle (PWA layer)
+- OffscreenCanvas + R3F-in-Worker — entire 3D rendering off main thread (per `adr/offscreen-canvas-render.md`)
+- Typed arrays for sim-engine state — `Int32Array(32)` register file, `Uint8Array` memory, no `Record<>` for hot state (per `adr/runtime-optimization-discipline.md`)
+- Struct-of-arrays (SoA) layout for pipeline trace + K-map cell state arrays (cache locality)
+- Hidden class stability — hot-path object shapes locked at construction, no post-construction property addition
+- Monomorphic call sites — sim-engine + solver paths stay monomorphic (V8 inline cache)
+- `Object.freeze` on hot config objects (delay table, control truth table, opcode map)
+- Iterative (not recursive) QM + Petrick implementation
+- Scheduler API (`scheduler.postTask` with explicit priorities) for compute dispatch
+- `await scheduler.yield()` between work units in long-running hot paths
+- `requestIdleCallback` for telemetry batching, abuse-flag scrubs, catalog index updates
+- Mesh batching via `BufferGeometry.mergeGeometries` for static datapath substrate elements
+- Programmatic LOD via drei `Detailed` — simpler geometry at distance
+- `renderer.autoClear = false` with manual clear of only-dirty regions
+- Texture atlas for shader-baked etched labels (single texture binding)
+- GPU instancing required for any repeated mesh > 8 instances
+- Eager per-page font subsetting via fonttools at build (only glyphs present on the page)
+- `structuredClone` over `JSON.parse(JSON.stringify(...))` for deep copy
+- `WeakMap` / `WeakRef` for collectable caches (snapshot decode cache, etc.)
+- Server Action streaming responses for QM step-through reveal + assembler progress
+- Zero 301/302 redirects — direct routing always
+- Precompiled regexes at module top-level, reused
+- Mutate-in-place over `slice` / `concat` in hot loops
 
 ## Anti-patterns banned
 
@@ -185,6 +207,14 @@ Memory leak detection via Playwright `page.coverage` + heap snapshot diff betwee
 - Off-screen panel rendering when scrolled out of viewport (use `content-visibility: auto`)
 - `useEffect` for read-after-render measurements that fire on every render (use `useLayoutEffect` or `useSyncExternalStore`)
 - Re-allocation of large arrays during hot path (Float32Array pre-allocated and reused)
+- Post-construction property addition on hot-path objects (hidden class deopt)
+- Megamorphic call sites in sim-engine + solver (V8 inline-cache deopt)
+- Recursive QM / Petrick / Espresso (use iterative)
+- `Record<K, V>` for sim-engine hot state (typed arrays only)
+- 301/302 redirects (direct routing always)
+- `slice` / `concat` in hot loops (mutate-in-place)
+- `JSON.parse(JSON.stringify(...))` for deep copy (use `structuredClone`)
+- Inline regex literals re-created in hot path (precompile at module top-level)
 
 ## Deferred-with-trigger ratchets
 
