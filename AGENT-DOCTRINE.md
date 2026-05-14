@@ -21,7 +21,7 @@ No phased "ship MVP, polish later" carve-outs. Floor never ceiling.
 
 ## Reference repo discipline
 
-The reference at `~/mips/ref` is the source of truth for the locked single-cycle MIPS datapath topology, control signals, paths, segments, value-ids, step semantics, and encoding rules. The agent reads ref but never references it by absolute path in any tracked doc or commit. Domain semantics flow ref → `MIPS-DATAPATH.md` + `MIPS-ISA.md` + code, never via cross-repo import. Per `book/HARD-RULES.md` "No code import across repos".
+The locked reference repo (path in agent memory) is the source of truth for the single-cycle MIPS datapath topology, control signals, paths, segments, value-ids, step semantics, and encoding rules. The agent reads ref but never references it by absolute path in any tracked doc or commit. Domain semantics flow ref → `MIPS-DATAPATH.md` + `MIPS-ISA.md` + code, never via cross-repo import. Per `book/HARD-RULES.md` "No code import across repos".
 
 The ref's 2D SVG presentation is NOT the source of truth for our 3D rendering. Topology is the contract; aesthetic is greenfield.
 

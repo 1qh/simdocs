@@ -59,7 +59,7 @@ bun scripts/smoke-auth.ts
 ### Restore Convex from backup
 
 ```bash
-# Backup location per claude2b pattern: <secrets-root>/convex-backup/<timestamp>.tar.zst
+# Backup location per operator reference deploy pattern (path in agent memory): <secrets-root>/convex-backup/<timestamp>.tar.zst
 cd ~/sim/apps/backend
 bunx convex import --replace <secrets-root>/convex-backup/<timestamp>.tar.zst
 ```

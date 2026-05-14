@@ -21,7 +21,7 @@ Indexed by `email` for lookup on signin.
 
 | Field | Type | Notes |
 |---|---|---|
-| `userId` | `string` | Foreign key to `users.email` (the canonical key, not Convex id) — matches byerag pattern |
+| `userId` | `string` | Foreign key to `users.email` (the canonical key, not Convex id) — matches the operator's reference Convex+auth project pattern (path in agent memory) |
 | `role` | `"user" \| "admin"` | Seeded from `BOOTSTRAP_ADMIN_EMAIL` on first matching signin |
 | `updatedAt` | `number` | epoch ms |
 | `updatedBy` | `string` | `"self"` on signin, `"admin"` if changed by admin |
@@ -78,7 +78,7 @@ Indexed by `userId`, `hash`.
 
 | Function | Auth | Args | Notes |
 |---|---|---|---|
-| Convex auth callbacks | n/a | per `@convex-dev/auth` | createOrUpdateUser, redirect — mirrors byerag patterns |
+| Convex auth callbacks | n/a | per `@convex-dev/auth` | createOrUpdateUser, redirect — mirrors operator's reference Convex+auth project patterns (path in agent memory) |
 
 ## Schema evolution
 

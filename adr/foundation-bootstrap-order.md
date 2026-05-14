@@ -33,7 +33,7 @@ Caught by: repo-layout-presence lint.
 
 ## Phase 1 — Tooling
 
-- `lintmax.config.ts` (biome + oxlint + eslint orchestration per byerag pattern)
+- `lintmax.config.ts` (biome + oxlint + eslint orchestration per the operator's reference Convex+auth project pattern in memory)
 - `sherif` workspace consistency
 - `simple-git-hooks` wiring `pre-commit: sh up.sh && git add -u`
 - `up.sh` runs `bun run fix` (lintmax fix) — never piped through head/tail per memory feedback
@@ -136,7 +136,7 @@ Caught by: link-check + MDX-compile green.
 
 ## Phase 17 — Deploy
 
-Dokploy + Cloudflare DNS/CDN + Convex self-host instance pointed at via `CONVEX_SELF_HOSTED_URL`. Bootstrap script borrowed from claude2b pattern.
+Dokploy + Cloudflare DNS/CDN + Convex self-host instance pointed at via `CONVEX_SELF_HOSTED_URL`. Bootstrap script derived from the operator's reference deploy project pattern (path in agent memory).
 
 Caught by: `make verify.bearer` green + smoke against deployed URL.
 

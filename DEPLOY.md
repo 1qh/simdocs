@@ -50,7 +50,7 @@ volumes:
   caddy-data:
 ```
 
-Exact env shape borrowed from claude2b (read at bootstrap time).
+Exact env shape derived from the operator's reference deploy project (path in agent memory) — read at bootstrap time.
 
 ## Deploy to Dokploy
 
@@ -60,7 +60,7 @@ make deploy
 
 Equivalent to: build container images → push to registry → dokploy applies compose update → smoke check against deployed URL.
 
-Concrete dokploy CLI invocation copied from claude2b pattern; project ID + dokploy server URL live in operator-local secrets.
+Concrete dokploy CLI invocation matches the operator's reference deploy project pattern (path in agent memory); project ID + dokploy server URL live in operator-local secrets.
 
 ## DNS + CDN
 

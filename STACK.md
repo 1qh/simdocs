@@ -87,7 +87,7 @@ mindmap
     OG
       next ImageResponse
     CI
-      GitHub Actions matched to claude2b pattern
+      GitHub Actions matched to operator reference deploy project pattern in memory
       Renovate auto bumps
       ledger jsonl gate outcomes
 ```
@@ -116,14 +116,14 @@ OSS-import-first scan per package logged in the package's ADR — see `adr/three
 - Routes: `/` landing, `/datapath` MIPS sim, `/kmap` K-map tool, `/pipeline` pipeline view, `/compare` side-by-side, `/learn/*` MDX explainers, `/s/[hash]` shared snapshot, `/me` (auth-gated, optional)
 - Server: RSC + Server Actions for save/share/assemble, Route Handlers for Convex webhooks
 - Client: 3D canvas islands, Monaco editor, zustand stores, framer-motion-3d transitions
-- Auth: `@convex-dev/auth` + Google OAuth (matches byerag pattern), anon-first, signin = optional cross-device persistence
+- Auth: `@convex-dev/auth` + Google OAuth (matches operator's reference Convex+auth project pattern in memory), anon-first, signin = optional cross-device persistence
 - Convex client: `convex` + `@convex-dev/auth` React bindings
 
 ## Convex backend stack
 
 `apps/backend`:
 - Convex self-host instance reachable via `CONVEX_SELF_HOSTED_URL`
-- Schema: snapshots, users, userProfiles (mirrors byerag's profile-with-role pattern), share-index
+- Schema: snapshots, users, userProfiles (mirrors operator's reference profile-with-role pattern in memory), share-index
 - Functions: `saveSnapshot`, `loadSnapshot`, `claimAnonSnapshots`, auth callbacks
 - Auth providers: Google via `@auth/core/providers/google`
 - File storage: Convex built-in for snapshot bodies >1KB

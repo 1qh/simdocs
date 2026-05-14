@@ -61,7 +61,7 @@ mindmap
 
 ### Datapath topology
 
-Single-cycle MIPS datapath, CS2100-variant (no school refs in product surface). Topology, paths, segments, value ids, control signals frozen against the reference implementation at `~/mips/ref/src/core/mips/single-cycle/`. See `MIPS-DATAPATH.md`.
+Single-cycle MIPS datapath (no school refs in product surface). Topology, paths, segments, value ids, control signals frozen against the reference implementation (path in agent memory). See `MIPS-DATAPATH.md`.
 
 ### Control signals
 

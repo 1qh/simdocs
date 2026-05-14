@@ -22,13 +22,13 @@ flowchart LR
 
 ## Why
 
-- Operator-existing dokploy VM satisfies `book/PHILOSOPHY.md` "Seamless machine migration" + "Single bootstrap path globally" — reuses operator's already-proven deploy pattern (precedent: claude2b).
+- Operator-existing dokploy VM satisfies `book/PHILOSOPHY.md` "Seamless machine migration" + "Single bootstrap path globally" — reuses operator's already-proven deploy pattern (precedent in agent memory).
 - Cloudflare CDN as bearer-mode cache is allowed per `book/PHILOSOPHY.md` "Self-host first" rule, because CDN is stateless edge — no persistent state at CF, swap = re-point DNS, cache rebuilds from origin in minutes.
 - Caddy gives self-host TLS + caching independent of CF; if CF goes away the system still serves.
 
 ## Bootstrap
 
-`tools/bootstrap-mac.sh` (per byerag pattern):
+`tools/bootstrap-mac.sh` (per operator's reference Convex+auth project pattern in memory):
 - Verifies bun, docker, dokploy CLI installed
 - Reads operator-original credentials from single secrets root (per `book/HARD-RULES.md` "Single secrets root")
 - Configures `.env` from secrets — `CONVEX_SELF_HOSTED_URL`, `SITE_URL`, `BOOTSTRAP_ADMIN_EMAIL`, OAuth client secrets

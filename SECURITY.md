@@ -8,7 +8,7 @@ Threat model + defense layers + operator-local secrets root.
 |---|---|
 | Malicious snapshot content (XSS via shared URL) | Snapshot bodies are typed binary, deserialized via `sim-engine` codec; no `eval`, no HTML, no inline scripts. UI renders only typed fields. |
 | Abuse via shared permalinks (offensive Asm comments etc.) | `flagAbuse` mutation + admin review queue; flagged hashes return 410 + cache purge at CF |
-| OAuth account takeover | Standard `@auth/core` Google provider, redirect validation against allowed origins (mirrors byerag pattern), no email aliases stripped |
+| OAuth account takeover | Standard `@auth/core` Google provider, redirect validation against allowed origins (mirrors operator's reference Convex+auth project pattern), no email aliases stripped |
 | CSRF | `@convex-dev/auth` provides cookie-based session; Convex mutations require auth token in body, not just cookie |
 | XSS in user-authored Asm / Boolean expr | Editor sanitizes via Monaco's typed model; rendering uses React, no `dangerouslySetInnerHTML` anywhere in product |
 | Rate-limit abuse (mass anonymous saves to fill storage) | Per-IP rate limit on `saveSnapshot` via Convex action limits + sliding-window counter |

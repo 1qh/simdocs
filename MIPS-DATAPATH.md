@@ -2,7 +2,7 @@
 
 Locked single-cycle datapath. Topology is the contract. Spec-of-code per `adr/ssot-precedence.md` — CI lint diffs this doc against `apps/web/features/datapath/generated/topology.ts`.
 
-Topology derived from the locked reference at `~/mips/ref/src/core/mips/single-cycle/`. No structural changes. Aesthetic rendering is greenfield per `UX-DOCTRINE.md`.
+Topology derived from the locked reference implementation (path in agent memory). No structural changes. Aesthetic rendering is greenfield per `UX-DOCTRINE.md`.
 
 ## Components
 

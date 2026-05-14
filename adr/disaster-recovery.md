@@ -11,7 +11,7 @@ Backup, restore, tested-restore protocol.
 
 | Asset | Frequency | Retention | Destination |
 |---|---|---|---|
-| Convex backend data | Daily | 30 days rolling + monthly snapshot retained 1 year | Self-host MinIO or operator's backup destination (per claude2b pattern) |
+| Convex backend data | Daily | 30 days rolling + monthly snapshot retained 1 year | Self-host MinIO or operator's backup destination (per operator's reference deploy project pattern in memory) |
 | Caddy state (TLS certs, cache cert keys) | Weekly | 30 days | Same |
 | Operator-original secrets root | Manual after every change | Operator's personal backup | Per `book/HARD-RULES.md` "Single secrets root" |
 | Repo state | Push to remote | Forever | Git remote (host per `adr/repo-layout.md`) |

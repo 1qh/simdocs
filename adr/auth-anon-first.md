@@ -6,7 +6,7 @@ Anonymous-first. Every sim, save, share, group, step, run, reset, scrub, compare
 
 ## Provider
 
-`@convex-dev/auth` + `@auth/core/providers/google` — matches byerag pattern verbatim. Single OAuth provider (Google) covers the locked floor. Passkeys + magic link grind in per "only more never less" once foundation is green.
+`@convex-dev/auth` + `@auth/core/providers/google` — matches the operator's reference Convex+auth project pattern verbatim (path in agent memory). Single OAuth provider (Google) covers the locked floor. Passkeys + magic link grind in per "only more never less" once foundation is green.
 
 ## Flow
 
@@ -41,15 +41,15 @@ sequenceDiagram
 
 ## Bootstrap admin
 
-`BOOTSTRAP_ADMIN_EMAIL` env var seeds an `admin` role on first matching signin, mirrors byerag pattern. Admin role used only for abuse moderation surfaces (flagged-hash review).
+`BOOTSTRAP_ADMIN_EMAIL` env var seeds an `admin` role on first matching signin, mirrors the operator's reference Convex+auth project pattern. Admin role used only for abuse moderation surfaces (flagged-hash review).
 
 ## Email canonicalization
 
-Reuses byerag's `validateProfileEmail` helper. Lowercase, NFC normalize, validate per RFC. No alias stripping (`+` allowed).
+Reuses the operator reference project's `validateProfileEmail` helper (path in memory). Lowercase, NFC normalize, validate per RFC. No alias stripping (`+` allowed).
 
 ## Redirect validation
 
-Reuses byerag's `validateRedirectTo` helper. Only allows redirects to configured `SITE_URL` origin(s). Off-site redirects fail loud.
+Reuses the operator reference project's `validateRedirectTo` helper (path in memory). Only allows redirects to configured `SITE_URL` origin(s). Off-site redirects fail loud.
 
 ## Caught by
 

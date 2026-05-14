@@ -8,7 +8,7 @@ Decision + rationale: see `adr/persistence-convex.md`, `adr/share-content-addres
 
 | Service | Endpoint |
 |---|---|
-| Convex backend | `CONVEX_SELF_HOSTED_URL` (operator's existing instance, deployed per claude2b pattern) |
+| Convex backend | `CONVEX_SELF_HOSTED_URL` (operator's existing instance, deployed per reference deploy project pattern in agent memory) |
 | Next app | reads `CONVEX_SELF_HOSTED_URL` + Convex deployment URL + admin key |
 | Caddy | reverse proxies both, terminates TLS |
 

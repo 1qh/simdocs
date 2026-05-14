@@ -30,7 +30,7 @@ sim/
 ├── package.json              # bun workspaces
 ├── lintmax.config.ts
 ├── tsconfig.json
-├── up.sh                     # pre-commit driver (per byerag pattern)
+├── up.sh                     # pre-commit driver (per operator reference project pattern in memory)
 ├── clean.sh
 ├── CLAUDE.md                 # short pointer to simdocs/CLAUDE.md
 └── README.md                 # 4-line quickstart + book + simdocs pointers
@@ -44,7 +44,7 @@ simdocs/                       # flat docs, this corpus
 
 - Two repos enforce `book/PHILOSOPHY.md` "One import graph, one home per concept" — docs never import code; code consumes specs by name (string match validated by CI lint).
 - Monorepo in `sim` enforces substrate-vs-product split physically — substrate (`packages/*`) vs product (`apps/web/**`) lives on disk, commit path lint catches mixed-mode.
-- Flat `simdocs` matches operator's existing docs-repo pattern (`byerag-docs`, `eximdocs`, `vadocs`).
+- Flat `simdocs` matches operator's existing docs-repo pattern across portfolio (paths in agent memory).
 - ADRs under `adr/` topical kebab-case, no numbering per `book/HARD-RULES.md` no-numbering rule.
 
 ## Required components

@@ -2,14 +2,14 @@
 
 ## Decision
 
-Convex self-host instance. `CONVEX_SELF_HOSTED_URL` env var points the client at the operator-managed Convex backend. Pattern borrowed verbatim from operator's existing Convex projects (byerag, claude2b).
+Convex self-host instance. `CONVEX_SELF_HOSTED_URL` env var points the client at the operator-managed Convex backend. Pattern derived verbatim from the operator's existing Convex+auth + deploy reference projects (paths in agent memory).
 
 ## Why
 
 - Convex self-host satisfies `book/PHILOSOPHY.md` Local-first hostability invariant — `ghcr.io/get-convex/convex-backend` runs in compose locally with the same image used in cluster.
 - Single primitive collapses DB + functions + file storage + real-time subscriptions + scheduled jobs + auth integration. Avoids speculative generality of building separate substrate packages for each concern per `book/SUBSTRATE.md` "Premature publication" anti-pattern.
 - SSOT — Convex schema in TS is the single source of truth, codegen produces typed client + server APIs.
-- Operator precedent — byerag uses this exact pattern; reusing pattern reduces ops surface across operator's portfolio.
+- Operator precedent — the reference Convex+auth project (in memory) uses this exact pattern; reusing pattern reduces ops surface across operator's portfolio.
 - Migration freedom — Convex export/import is the documented swap path if persistence ever needs to move off Convex.
 
 ## Schema home
@@ -21,7 +21,7 @@ Convex self-host instance. `CONVEX_SELF_HOSTED_URL` env var points the client at
 | Table | Purpose |
 |---|---|
 | `users` | Identity row, populated by `@convex-dev/auth` Google provider |
-| `userProfiles` | Role + display fields, mirrors byerag pattern |
+| `userProfiles` | Role + display fields, mirrors operator's reference Convex+auth project pattern (in memory) |
 | `snapshots` | Content-addressed snapshot rows — `hash`, `bodyStorageId`, `createdAt`, `ownerUserId` (nullable for anon), `abuseFlag` |
 | `anonClaims` | Hash → userId mapping, populated on signin to claim localStorage-tracked anon saves |
 

@@ -19,7 +19,7 @@ Substrate packages: MIT, matches operator's existing pattern across pm4ai-standa
 
 ## Repo host
 
-Public substrate mirrors to GitHub under operator's account (precedent: pm4ai, lintmax both GitHub). Private product app + simdocs on operator's primary git host per claude2b pattern (Forgejo or GitHub-private, confirmed at deploy phase by reading claude2b).
+Public substrate mirrors to GitHub under operator's account (precedent: operator's existing OSS tooling — paths in agent memory — already on GitHub). Private product app + simdocs on operator's primary git host per the reference deploy project pattern in memory (Forgejo or GitHub-private, confirmed at deploy phase by reading that project's config).
 
 ## Publishing as installable artifact
 
