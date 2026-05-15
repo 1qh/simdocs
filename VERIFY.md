@@ -183,10 +183,10 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 - [x] `test.unit.bits`
 - [x] `test.unit.boolean`
 - [x] `test.unit.design-tokens`
-- [ ] `test.unit.editor`
-- [ ] `test.unit.hud`
+- [x] `test.unit.editor`
+- [x] `test.unit.hud`
 - [x] `test.unit.sim-engine`
-- [ ] `test.unit.three-kit`
+- [x] `test.unit.three-kit`
 - [x] `test.unit.apps-web`
 - [x] `test.property.bits`
 - [x] `test.property.boolean`
