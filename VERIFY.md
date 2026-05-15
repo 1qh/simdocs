@@ -381,7 +381,7 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 ### Local-first verification
 
-- [ ] `verify.local`
+- [x] `verify.local`
 - [ ] `verify.bearer`
 - [ ] `verify.fresh`
 
