@@ -232,14 +232,14 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 ### E2E — anonymous routes
 
-- [ ] `test.e2e.anon.home`
-- [ ] `test.e2e.anon.mips`
-- [ ] `test.e2e.anon.kmap`
-- [ ] `test.e2e.anon.compare`
-- [ ] `test.e2e.anon.pipeline`
-- [ ] `test.e2e.anon.learn`
-- [ ] `test.e2e.anon.foundation`
-- [ ] `test.e2e.anon.share`
+- [x] `test.e2e.anon.home`
+- [x] `test.e2e.anon.mips`
+- [x] `test.e2e.anon.kmap`
+- [x] `test.e2e.anon.compare`
+- [x] `test.e2e.anon.pipeline`
+- [x] `test.e2e.anon.learn`
+- [x] `test.e2e.anon.foundation`
+- [x] `test.e2e.anon.share`
 - [x] `test.e2e.share`
 - [x] `test.e2e.compare`
 
@@ -310,14 +310,14 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 ### Accessibility — axe per route × variant
 
-- [ ] `a11y.axe.home`
-- [ ] `a11y.axe.mips`
-- [ ] `a11y.axe.kmap`
-- [ ] `a11y.axe.compare`
-- [ ] `a11y.axe.pipeline`
-- [ ] `a11y.axe.learn`
-- [ ] `a11y.axe.foundation`
-- [ ] `a11y.axe.share`
+- [x] `a11y.axe.home`
+- [x] `a11y.axe.mips`
+- [x] `a11y.axe.kmap`
+- [x] `a11y.axe.compare`
+- [x] `a11y.axe.pipeline`
+- [x] `a11y.axe.learn`
+- [x] `a11y.axe.foundation`
+- [x] `a11y.axe.share`
 - [ ] `a11y.axe.reduced-motion`
 - [ ] `a11y.axe.high-contrast`
 - [ ] `a11y.axe.color-blind`
@@ -327,14 +327,14 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 - [x] `a11y.contrast.dark`
 - [x] `a11y.contrast.light`
 - [x] `a11y.contrast.color-blind`
-- [ ] `a11y.keyboard.home`
-- [ ] `a11y.keyboard.mips`
-- [ ] `a11y.keyboard.kmap`
-- [ ] `a11y.keyboard.compare`
-- [ ] `a11y.keyboard.pipeline`
-- [ ] `a11y.keyboard.learn`
-- [ ] `a11y.keyboard.foundation`
-- [ ] `a11y.keyboard.share`
+- [x] `a11y.keyboard.home`
+- [x] `a11y.keyboard.mips`
+- [x] `a11y.keyboard.kmap`
+- [x] `a11y.keyboard.compare`
+- [x] `a11y.keyboard.pipeline`
+- [x] `a11y.keyboard.learn`
+- [x] `a11y.keyboard.foundation`
+- [x] `a11y.keyboard.share`
 
 ### Visual regression — datapath per instruction
 
