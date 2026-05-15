@@ -375,7 +375,7 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 ### Mutation testing
 
-- [ ] `mutate.sim-engine`
+- [x] `mutate.sim-engine`
 - [x] `mutate.boolean`
 - [x] `mutate.bits`
 
