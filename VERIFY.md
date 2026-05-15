@@ -197,9 +197,9 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 ### Replay codec
 
-- [ ] `test.replay.v1`
-- [ ] `test.replay.v2`
-- [ ] `test.replay.v3`
+- [x] `test.replay.v1`
+- [x] `test.replay.v2`
+- [x] `test.replay.v3`
 
 ### Golden traces — datapath-animated instructions
 
