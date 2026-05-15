@@ -318,9 +318,9 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 - [x] `a11y.axe.learn`
 - [x] `a11y.axe.foundation`
 - [x] `a11y.axe.share`
-- [ ] `a11y.axe.reduced-motion`
-- [ ] `a11y.axe.high-contrast`
-- [ ] `a11y.axe.color-blind`
+- [x] `a11y.axe.reduced-motion`
+- [x] `a11y.axe.high-contrast`
+- [x] `a11y.axe.color-blind`
 
 ### Accessibility — contrast + keyboard
 
