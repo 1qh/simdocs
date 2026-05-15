@@ -174,7 +174,7 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 - [ ] `spec.datapath`
 - [ ] `spec.isa`
-- [ ] `spec.stack`
+- [x] `spec.stack`
 - [ ] `spec.schemas`
 - [ ] `spec.lint-baseline`
 
