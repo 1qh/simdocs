@@ -245,12 +245,12 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 ### E2E — pipeline hazards
 
-- [ ] `test.e2e.pipeline.raw`
-- [ ] `test.e2e.pipeline.waw`
-- [ ] `test.e2e.pipeline.war`
-- [ ] `test.e2e.pipeline.control`
-- [ ] `test.e2e.pipeline.forwarding`
-- [ ] `test.e2e.pipeline.stall`
+- [x] `test.e2e.pipeline.raw`
+- [x] `test.e2e.pipeline.waw`
+- [x] `test.e2e.pipeline.war`
+- [x] `test.e2e.pipeline.control`
+- [x] `test.e2e.pipeline.forwarding`
+- [x] `test.e2e.pipeline.stall`
 
 ### E2E — K-map 2D
 
