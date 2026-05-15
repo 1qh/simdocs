@@ -338,23 +338,23 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 ### Visual regression — datapath per instruction
 
-- [ ] `visual.datapath.add`
-- [ ] `visual.datapath.addi`
-- [ ] `visual.datapath.and`
-- [ ] `visual.datapath.beq`
-- [ ] `visual.datapath.bne`
-- [ ] `visual.datapath.lw`
-- [ ] `visual.datapath.or`
-- [ ] `visual.datapath.slt`
-- [ ] `visual.datapath.sub`
-- [ ] `visual.datapath.sw`
-- [ ] `visual.datapath.andi`
-- [ ] `visual.datapath.j`
-- [ ] `visual.datapath.lui`
-- [ ] `visual.datapath.nor`
-- [ ] `visual.datapath.ori`
-- [ ] `visual.datapath.sll`
-- [ ] `visual.datapath.srl`
+- [x] `visual.datapath.add`
+- [x] `visual.datapath.addi`
+- [x] `visual.datapath.and`
+- [x] `visual.datapath.beq`
+- [x] `visual.datapath.bne`
+- [x] `visual.datapath.lw`
+- [x] `visual.datapath.or`
+- [x] `visual.datapath.slt`
+- [x] `visual.datapath.sub`
+- [x] `visual.datapath.sw`
+- [x] `visual.datapath.andi`
+- [x] `visual.datapath.j`
+- [x] `visual.datapath.lui`
+- [x] `visual.datapath.nor`
+- [x] `visual.datapath.ori`
+- [x] `visual.datapath.sll`
+- [x] `visual.datapath.srl`
 
 ### Visual regression — K-map + pipeline
 
