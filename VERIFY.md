@@ -298,12 +298,12 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 ### Performance — frame budget + heap
 
-- [ ] `perf.frame-budget.datapath`
-- [ ] `perf.frame-budget.kmap-2d`
-- [ ] `perf.frame-budget.kmap-3d`
-- [ ] `perf.frame-budget.compare`
-- [ ] `perf.frame-budget.pipeline`
-- [ ] `perf.frame-budget.foundation`
+- [x] `perf.frame-budget.datapath`
+- [x] `perf.frame-budget.kmap-2d`
+- [x] `perf.frame-budget.kmap-3d`
+- [x] `perf.frame-budget.compare`
+- [x] `perf.frame-budget.pipeline`
+- [x] `perf.frame-budget.foundation`
 - [ ] `perf.heap-leak.datapath-cycle`
 - [ ] `perf.heap-leak.kmap-cycle`
 - [ ] `perf.heap-leak.share-cycle`
