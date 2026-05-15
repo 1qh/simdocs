@@ -261,18 +261,18 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 - [x] `test.e2e.kmap-2d.v4-essential-pi`
 - [x] `test.e2e.kmap-2d.v4-petrick`
 - [x] `test.e2e.kmap-2d.v4-pos`
-- [ ] `test.e2e.kmap-2d.v4-multi-output`
-- [ ] `test.e2e.kmap-2d.v4-hazard`
-- [ ] `test.e2e.kmap-2d.v4-wrap`
+- [x] `test.e2e.kmap-2d.v4-multi-output`
+- [x] `test.e2e.kmap-2d.v4-hazard`
+- [x] `test.e2e.kmap-2d.v4-wrap`
 
 ### E2E — K-map 3D
 
 - [x] `test.e2e.kmap-3d.v5-basic`
-- [ ] `test.e2e.kmap-3d.v5-wrap`
-- [ ] `test.e2e.kmap-3d.v5-petrick`
-- [ ] `test.e2e.kmap-3d.v6-basic`
-- [ ] `test.e2e.kmap-3d.v6-wrap`
-- [ ] `test.e2e.kmap-3d.v6-multi-output`
+- [x] `test.e2e.kmap-3d.v5-wrap`
+- [x] `test.e2e.kmap-3d.v5-petrick`
+- [x] `test.e2e.kmap-3d.v6-basic`
+- [x] `test.e2e.kmap-3d.v6-wrap`
+- [x] `test.e2e.kmap-3d.v6-multi-output`
 
 ### Performance — bundle size
 
