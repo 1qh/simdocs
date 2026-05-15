@@ -383,7 +383,7 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 - [x] `verify.local`
 - [ ] `verify.bearer`
-- [ ] `verify.fresh`
+- [x] `verify.fresh`
 
 ### Deploy verification
 
