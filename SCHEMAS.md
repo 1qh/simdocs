@@ -1,61 +1,52 @@
 # SCHEMAS
 
-Convex schemas. SSOT lives in `apps/backend/convex/schema.ts`. This doc carries the spec form per `adr/ssot-precedence.md`; CI lint diffs.
+Convex schemas. SSOT lives in `apps/backend/convex/schema.ts`. This doc mirrors the deployed shape; CI lint diffs.
 
 ## Tables
 
 ### `users`
 
-Created and managed by `@convex-dev/auth`. Fields below are the project's additions on top of the auth-library defaults.
-
-| Field | Type | Notes |
-|---|---|---|
-| `email` | `string` | Canonical lowercase NFC |
-| `name` | `string?` | Display name from OAuth profile, max 200 chars, trimmed |
-| `image` | `string?` | OAuth profile image URL, must start with `https://`, max 2000 chars |
-| `emailVerificationTime` | `number?` | Convex Auth standard |
-
-Indexed by `email` for lookup on signin.
+Auth library default tables from `@convex-dev/auth` (`authTables` spread). Fields are the standard Convex Auth shape: `email`, `name`, `image`, `phone`, `emailVerificationTime`, `phoneVerificationTime`, `isAnonymous`.
 
 ### `userProfiles`
 
 | Field | Type | Notes |
 |---|---|---|
-| `userId` | `string` | Foreign key to `users.email` (the canonical key, not Convex id) — matches the operator's reference Convex+auth project pattern (path in agent memory) |
-| `role` | `"user" \| "admin"` | Seeded from `BOOTSTRAP_ADMIN_EMAIL` on first matching signin |
-| `updatedAt` | `number` | epoch ms |
-| `updatedBy` | `string` | `"self"` on signin, `"admin"` if changed by admin |
+| `userId` | `Id<'users'>` | FK to Convex `users` table id |
+| `isAdmin` | `boolean` | Seeded from `BOOTSTRAP_ADMIN_EMAIL` on first matching signin |
+| `createdAt` | `number` | epoch ms |
+| `lastSeenAt` | `number` | epoch ms |
 
-Indexed by `userId`.
+Indexed by `userId` (`byUserId`).
 
 ### `snapshots`
 
-Content-addressed snapshot rows. Tier-2 only — tier-1 (URL-fragment) lives in URLs, not the DB.
+Content-addressed snapshot rows. Tier-2 only — tier-1 (URL fragment ≤1KB) lives in URLs, not the DB.
 
 | Field | Type | Notes |
 |---|---|---|
-| `hash` | `string` | blake3 16-hex-char prefix, primary access key |
-| `bodyStorageId` | `string \| null` | Convex file-storage ID when body > inline-threshold |
-| `bodyInline` | `bytes \| null` | Inline body when ≤ inline-threshold |
-| `contentType` | `"datapath" \| "kmap" \| "pipeline" \| "compare"` | Discriminator |
-| `version` | `number` | Schema version embedded in body, mirrored here for index/migration |
+| `hash` | `string` | Canonical-JSON blake3 hex, primary access key |
+| `bytes` | `number` | Compressed payload size |
+| `canonicalJson` | `string` | Stored canonical JSON body |
+| `kind` | `"mips" \| "kmap" \| "compare" \| "pipeline"` | Discriminator |
+| `parentHash` | `string?` | Optional ancestry |
 | `createdAt` | `number` | epoch ms |
-| `ownerUserId` | `string?` | Nullable for anonymous snapshots |
-| `abuseFlag` | `null \| { reason: string; flaggedAt: number; flaggedBy: string }` | Set by `flagAbuse` mutation; loading flagged hash returns 410 |
+| `submitterFingerprint` | `string` | Anonymous-ownership fingerprint |
+| `claimedByUserId` | `Id<'users'>?` | Set when anon submitter signs in and claims |
 
-Indexed by `hash` (primary), `ownerUserId` (for `/me` list), `createdAt` (for moderation queue).
+Indexes: `byHash`, `byUser` (`claimedByUserId`), `byFingerprint` (`submitterFingerprint`).
 
-### `anonClaims`
+### `rateLimitWindows`
 
-Append-only audit of anonymous-claim events.
+Rolling-window counter table for `saveSnapshot` rate limiting.
 
 | Field | Type | Notes |
 |---|---|---|
-| `userId` | `string` | Who claimed |
-| `hash` | `string` | Which snapshot |
-| `claimedAt` | `number` | epoch ms |
+| `keyHash` | `string` | SHA-256 of submitter fingerprint |
+| `count` | `number` | Requests in current window |
+| `windowStartMs` | `number` | Window-start epoch ms |
 
-Indexed by `userId`, `hash`.
+Indexed by `keyHash` (`byKeyHash`).
 
 ## Functions
 
@@ -63,29 +54,28 @@ Indexed by `userId`, `hash`.
 
 | Function | Auth | Args | Returns |
 |---|---|---|---|
-| `saveSnapshot` | none (anon allowed) | `hash, bytes, contentType, version` | `{ hash }` (idempotent) |
-| `claimAnonSnapshots` | signed-in | `hashList: string[]` | `{ claimedCount }` |
-| `flagAbuse` | none | `hash, reason` | `void` |
+| `saveSnapshot` | none (anon allowed) | `hash, bytes, canonicalJson, fingerprint, kind, parentHash?` | `{ created: boolean, hash }` |
+| `claimAnonSnapshots` | signed-in | `fingerprint, userId` | `{ claimed: number }` |
 
 ### Queries
 
 | Function | Auth | Args | Returns |
 |---|---|---|---|
-| `loadSnapshot` | none | `hash` | `{ bytes, contentType, version }` (404 if missing, 410 if flagged) |
-| `mySnapshots` | signed-in | `cursor?` | paginated list of owned snapshots |
+| `loadSnapshot` | none | `hash` | snapshot row or `null` |
 
 ### Actions
 
-| Function | Auth | Args | Notes |
-|---|---|---|---|
-| Convex auth callbacks | n/a | per `@convex-dev/auth` | createOrUpdateUser, redirect — mirrors operator's reference Convex+auth project patterns (path in agent memory) |
+`@convex-dev/auth` standard handlers (Google OAuth + Anonymous providers) — see `auth.ts`.
+
+## Rate limiting
+
+30 requests per 60_000 ms window per fingerprint. 31st throws `rate_limit_exceeded`. Counter table `rateLimitWindows` keyed by SHA-256 of fingerprint.
 
 ## Schema evolution
 
-Expand-contract per `book/HARD-RULES.md`. Add new field as optional, dual-write or backfill, then promote to required in a later release. Migration tracked in `apps/backend/scripts/migrate-snapshots.ts` style scripts.
+Expand-contract per `book/HARD-RULES.md`. Add new field as optional, dual-write or backfill, then promote to required in a later release.
 
 ## Caught by
 
-- Spec-of-code lint diffs this doc's tables against `apps/backend/convex/schema.ts`
-- `convex-test` covers every mutation + query with round-trip assertions
-- Schema migration smoke runs every committed migration script against fresh DB
+- Spec-of-code lint diffs this doc's table list against `apps/backend/convex/schema.ts` table names
+- Live convex-client tests against local self-host stack cover saveSnapshot/loadSnapshot/rate-limit
