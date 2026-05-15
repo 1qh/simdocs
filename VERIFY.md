@@ -377,7 +377,7 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 
 - [ ] `mutate.sim-engine`
 - [ ] `mutate.boolean`
-- [ ] `mutate.bits`
+- [x] `mutate.bits`
 
 ### Local-first verification
 
