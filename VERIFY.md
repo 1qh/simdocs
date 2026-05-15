@@ -163,7 +163,7 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 - [x] `tsc.hud`
 - [x] `tsc.sim-engine`
 - [x] `tsc.three-kit`
-- [ ] `tsc.apps-web`
+- [x] `tsc.apps-web`
 - [x] `tsc.apps-backend`
 
 ### Codegen freshness
