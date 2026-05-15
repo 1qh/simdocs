@@ -227,7 +227,7 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 ### Integration
 
 - [x] `test.convex`
-- [ ] `test.auth-flow`
+- [x] `test.auth-flow`
 - [x] `test.rate-limit`
 
 ### E2E — anonymous routes
