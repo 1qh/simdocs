@@ -173,7 +173,7 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 ### Spec-of-code drift
 
 - [ ] `spec.datapath`
-- [ ] `spec.isa`
+- [x] `spec.isa`
 - [x] `spec.stack`
 - [x] `spec.schemas`
 - [ ] `spec.lint-baseline`
