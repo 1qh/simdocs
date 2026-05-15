@@ -176,7 +176,7 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 - [x] `spec.isa`
 - [x] `spec.stack`
 - [x] `spec.schemas`
-- [ ] `spec.lint-baseline`
+- [x] `spec.lint-baseline`
 
 ### Unit tests
 
