@@ -409,4 +409,4 @@ Every box flips `- [ ]` → `- [x]` only with literal evidence captured in the m
 - [x] `infra.ci.green-on-main`
 - [x] `infra.repos.sim-pushed`
 - [x] `infra.repos.simdocs-pushed`
-- [ ] `infra.ledger.stale-empty`
+- [x] `infra.ledger.stale-empty`
